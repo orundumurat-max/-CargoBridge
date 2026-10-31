@@ -1,229 +1,96 @@
-import { useMemo, useState } from 'react';
-import {
-  ArrowDownUp, ArrowRight, BadgeCheck, Bell, Box, Building2, CheckCircle2,
-  ChevronDown, CircleHelp, ClipboardList, Globe2, Menu, MessageSquare,
-  Plus, Search, ShieldCheck, SlidersHorizontal, Truck, X
-} from 'lucide-react';
-import type { LoadListing, NewLoadInput, RouteType } from './types';
-import { createLoad, getLoads, addOffer, resetDemoData } from './storage';
+import {useEffect,useMemo,useState} from "react";
+type Lang="tr"|"en"|"fr"|"de"|"es"|"it"|"nl"|"pl"|"ru"|"fa";
+type Load={id:string;from:string;to:string;cargo:string;vehicle:string;date:string;price:string;owner:string;phone:string;notes:string};
+type Availability="available_now"|"available_at"|"busy"|"return_load"|"unavailable";
+type Driver={id:string;name:string;vehicle:string;capacity:string;body:string;areas:string;phone:string;whatsapp:boolean;telegram:boolean;phoneVisible:boolean;notes:string;category?:string;make?:string;model?:string;year?:string;customMake?:string;customModel?:string;trailerType?:string;trailerMake?:string;trailerModel?:string;trailerYear?:string;trailerLength?:string;trailerWidth?:string;trailerHeight?:string;trailerPayload?:string;palletCapacity?:string;rearDoorWidth?:string;rearDoorHeight?:string;loadingSides?:string[];tieDowns?:string[];equipment?:string[];availability?:Availability;availableAt?:string;lookingForLoads?:boolean};
+const langs:{code:Lang;label:string;flag:string}[]=[{code:"tr",label:"TÃ¼rkÃ§e",flag:"ð¹ð·"},{code:"en",label:"English",flag:"ð¬ð§"},{code:"fr",label:"FranÃ§ais",flag:"ð«ð·"},{code:"de",label:"Deutsch",flag:"ð©ðª"},{code:"es",label:"EspaÃ±ol",flag:"ðªð¸"},{code:"it",label:"Italiano",flag:"ð®ð¹"},{code:"nl",label:"Nederlands",flag:"ð³ð±"},{code:"pl",label:"Polski",flag:"ðµð±"},{code:"ru",label:"Ð ÑÑÑÐºÐ¸Ð¹",flag:"ð·ðº"},{code:"fa",label:"ÙØ§Ø±Ø³Û",flag:"ð®ð·"}];
+const dict:Record<Lang,string[]> = {
+tr:["YÃ¼kÃ¼nÃ¼ bul, yolunu kazan","YÃ¼k ve aracÄ± doÄrudan buluÅturun.","AracÄ±nÄ±za uygun yÃ¼kÃ¼ bulun; yÃ¼kÃ¼nÃ¼z iÃ§in doÄru aracÄ± keÅfedin.","YÃ¼k ara","AraÃ§ ara","AracÄ±mÄ± kaydet","YÃ¼k ilanlarÄ±","YÃ¼k ilanÄ± oluÅtur","Nereden","Nereye","YÃ¼k tÃ¼rÃ¼","Gerekli araÃ§","YÃ¼kleme tarihi","Ãcret / teklif","Ä°lan sahibi","Telefon","AÃ§Ä±klama","Ara","TÃ¼mÃ¼","Åehir iÃ§i","Åehirler arasÄ±","UluslararasÄ±","YayÄ±nla","Kaydet","Ad / firma adÄ±","Kapasite","Kasa tipi","ÃalÄ±ÅtÄ±ÄÄ±m bÃ¶lgeler / gÃ¼zergÃ¢hlar","Ä°letiÅim seÃ§enekleri","Telefonu gÃ¶ster","WhatsApp gÃ¶ster","Telegram gÃ¶ster","DÃ¶nÃ¼Å yÃ¼kÃ¼ fÄ±rsatlarÄ±","BoÅ dÃ¶nÃ¼Å yapmayÄ±n. GÃ¼zergÃ¢hÄ±nÄ±za uygun yÃ¼kleri arayÄ±n.","Bu alan zorunludur.","AramanÄ±za uygun ilan bulunamadÄ±.","HenÃ¼z araÃ§ kaydÄ± yok.","Demo: bilgiler yalnÄ±zca bu cihazdaki tarayÄ±cÄ±da saklanÄ±r. GerÃ§ek hesap, ortak veri ve bildirim henÃ¼z etkin deÄil.","Dil","Ä°letiÅim","YÃ¼kler","AraÃ§lar","AraÃ§ kaydÄ±","Yeni yÃ¼k","YÃ¼k + AraÃ§","Ek bilgi (isteÄe baÄlÄ±)","Telefon numarasÄ±","Ãrn. mobilya, palet, ev eÅyasÄ±","Ãrn. kamyonet, kamyon, tÄ±r","Ãrn. ParisâLyon","Ãrn. 12 ton / 35 mÂ³","Ãrn. tenteli, kapalÄ± kasa, frigorifik","Ä°lan eklendi!","Kaydedildi!","YalnÄ±zca bu cihazda saklanÄ±r.","CargoBridge â¢ YÃ¼k ile aracÄ± buluÅturan platform"],
+en:["Find your load, earn on your route","Connect cargo with the right vehicle.","Find suitable loads for your vehicle, or a vehicle for your cargo.","Find loads","Find a vehicle","Register my vehicle","Load listings","Post a load","From","To","Cargo type","Vehicle needed","Loading date","Price / offer","Posted by","Phone","Description","Search","All","Local","Intercity","International","Publish","Save","Name / company","Capacity","Body type","Service areas / routes","Contact options","Show phone","Show WhatsApp","Show Telegram","Backhaul opportunities","Avoid empty return trips. Search loads along your route.","This field is required.","No listings match your search.","No vehicles registered yet.","Demo: data is stored in this browser only. Real accounts, shared data and notifications are not active yet.","Language","Contact","Loads","Vehicles","Vehicle profile","New load","Load + Vehicle","Extra details (optional)","Phone number","e.g. furniture, pallets, household goods","e.g. van, truck, semi-trailer","e.g. ParisâLyon","e.g. 12 tonnes / 35 mÂ³","e.g. curtain-side, box, refrigerated","Listing added!","Saved!","Stored on this device only.","CargoBridge â¢ Connecting cargo and vehicles"],
+fr:["Trouvez du fret, rentabilisez votre trajet","Reliez directement marchandises et vÃ©hicules.","Trouvez du fret adaptÃ© ou un vÃ©hicule pour votre marchandise.","Chercher un chargement","Chercher un vÃ©hicule","Enregistrer mon vÃ©hicule","Annonces de fret","Publier un chargement","DÃ©part","ArrivÃ©e","Type de marchandise","VÃ©hicule nÃ©cessaire","Date de chargement","Prix / offre","PubliÃ© par","TÃ©lÃ©phone","Description","Rechercher","Tout","Local","Interurbain","International","Publier","Enregistrer","Nom / entreprise","CapacitÃ©","Carrosserie","Zones / itinÃ©raires desservis","Options de contact","Afficher le tÃ©lÃ©phone","Afficher WhatsApp","Afficher Telegram","Chargements retour","Ãvitez les retours Ã  vide et trouvez du fret sur votre itinÃ©raire.","Champ obligatoire.","Aucune annonce correspondante.","Aucun vÃ©hicule enregistrÃ©.","DÃ©mo : donnÃ©es stockÃ©es dans ce navigateur uniquement. Comptes et notifications non actifs.","Langue","Contact","Chargements","VÃ©hicules","Profil vÃ©hicule","Nouveau chargement","Fret + vÃ©hicule","Informations supplÃ©mentaires","NumÃ©ro de tÃ©lÃ©phone","Ex. meubles, palettes, effets personnels","Ex. fourgon, camion, semi-remorque","Ex. ParisâLyon","Ex. 12 tonnes / 35 mÂ³","Ex. bÃ¢chÃ©, caisse fermÃ©e, frigorifique","Annonce ajoutÃ©e !","EnregistrÃ© !","StockÃ© sur cet appareil uniquement.","CargoBridge â¢ Relier fret et vÃ©hicules"],
+de:["Fracht finden, Fahrten besser nutzen","Fracht und Fahrzeuge direkt verbinden.","Finden Sie passende Ladungen oder das richtige Fahrzeug.","Fracht suchen","Fahrzeug suchen","Fahrzeug registrieren","Frachtangebote","Fracht anbieten","Von","Nach","Ladungsart","BenÃ¶tigtes Fahrzeug","Ladedatum","Preis / Angebot","Anbieter","Telefon","Beschreibung","Suchen","Alle","Lokal","Ãberregional","International","VerÃ¶ffentlichen","Speichern","Name / Firma","KapazitÃ¤t","Aufbauart","Einsatzgebiete / Routen","Kontaktoptionen","Telefon anzeigen","WhatsApp anzeigen","Telegram anzeigen","RÃ¼ckladungen","Vermeiden Sie Leerfahrten und finden Sie Ladungen auf Ihrer Route.","Pflichtfeld.","Keine passenden Angebote gefunden.","Noch keine Fahrzeuge registriert.","Demo: Daten werden nur in diesem Browser gespeichert. Konten und Benachrichtigungen sind noch nicht aktiv.","Sprache","Kontakt","Ladungen","Fahrzeuge","Fahrzeugprofil","Neue Ladung","Fracht + Fahrzeug","ZusÃ¤tzliche Angaben","Telefonnummer","z. B. MÃ¶bel, Paletten, Haushaltswaren","z. B. Transporter, Lkw, Sattelzug","z. B. ParisâLyon","z. B. 12 Tonnen / 35 mÂ³","z. B. Plane, Koffer, KÃ¼hlfahrzeug","Angebot hinzugefÃ¼gt!","Gespeichert!","Nur auf diesem GerÃ¤t gespeichert.","CargoBridge â¢ Fracht und Fahrzeuge verbinden"],
+es:["Encuentra carga, aprovecha tu ruta","Conecta mercancÃ­as y vehÃ­culos directamente.","Encuentra cargas adecuadas o un vehÃ­culo para tu mercancÃ­a.","Buscar cargas","Buscar vehÃ­culo","Registrar mi vehÃ­culo","Anuncios de carga","Publicar carga","Origen","Destino","Tipo de mercancÃ­a","VehÃ­culo necesario","Fecha de carga","Precio / oferta","Publicado por","TelÃ©fono","DescripciÃ³n","Buscar","Todos","Local","Interurbano","Internacional","Publicar","Guardar","Nombre / empresa","Capacidad","CarrocerÃ­a","Zonas / rutas","Opciones de contacto","Mostrar telÃ©fono","Mostrar WhatsApp","Mostrar Telegram","Cargas de retorno","Evita viajes vacÃ­os y encuentra carga en tu ruta.","Campo obligatorio.","No hay anuncios que coincidan.","AÃºn no hay vehÃ­culos registrados.","Demo: datos guardados solo en este navegador. Cuentas y notificaciones aÃºn no estÃ¡n activas.","Idioma","Contacto","Cargas","VehÃ­culos","Perfil del vehÃ­culo","Nueva carga","Carga + vehÃ­culo","InformaciÃ³n adicional","NÃºmero de telÃ©fono","Ej. muebles, palÃ©s, enseres","Ej. furgoneta, camiÃ³n, trÃ¡iler","Ej. ParÃ­sâLyon","Ej. 12 toneladas / 35 mÂ³","Ej. lona, caja cerrada, frigorÃ­fico","Anuncio aÃ±adido!","Guardado!","Solo en este dispositivo.","CargoBridge â¢ Conectando cargas y vehÃ­culos"],
+it:["Trova carichi, valorizza il tuo viaggio","Collega direttamente merci e veicoli.","Trova carichi adatti o un veicolo per la tua merce.","Cerca carichi","Cerca un veicolo","Registra il mio veicolo","Annunci di carico","Pubblica un carico","Partenza","Destinazione","Tipo di merce","Veicolo necessario","Data di carico","Prezzo / offerta","Pubblicato da","Telefono","Descrizione","Cerca","Tutti","Locale","Interurbano","Internazionale","Pubblica","Salva","Nome / azienda","CapacitÃ ","Carrozzeria","Zone / percorsi","Opzioni di contatto","Mostra telefono","Mostra WhatsApp","Mostra Telegram","Carichi di ritorno","Evita viaggi a vuoto e trova carichi lungo il percorso.","Campo obbligatorio.","Nessun annuncio corrispondente.","Nessun veicolo registrato.","Demo: dati salvati solo in questo browser. Account e notifiche non sono attivi.","Lingua","Contatto","Carichi","Veicoli","Profilo veicolo","Nuovo carico","Carico + veicolo","Informazioni aggiuntive","Numero di telefono","Es. mobili, pallet, articoli domestici","Es. furgone, camion, autoarticolato","Es. ParigiâLione","Es. 12 tonnellate / 35 mÂ³","Es. telonato, furgonato, refrigerato","Annuncio aggiunto!","Salvato!","Solo su questo dispositivo.","CargoBridge â¢ Colleghiamo merci e veicoli"],
+nl:["Vind lading, verdien aan je route","Breng lading en voertuigen direct samen.","Vind passende ladingen of een voertuig voor uw goederen.","Lading zoeken","Voertuig zoeken","Mijn voertuig registreren","Ladingaanbod","Lading plaatsen","Van","Naar","Soort goederen","Benodigd voertuig","Laaddatum","Prijs / bod","Geplaatst door","Telefoon","Beschrijving","Zoeken","Alles","Lokaal","Intercity","Internationaal","Plaatsen","Opslaan","Naam / bedrijf","Laadvermogen","Opbouwtype","Werkgebieden / routes","Contactopties","Telefoon tonen","WhatsApp tonen","Telegram tonen","Retourladingen","Voorkom lege ritten en vind lading op uw route.","Dit veld is verplicht.","Geen passende aanbiedingen gevonden.","Nog geen voertuigen geregistreerd.","Demo: gegevens alleen opgeslagen in deze browser. Accounts en meldingen zijn nog niet actief.","Taal","Contact","Ladingen","Voertuigen","Voertuigprofiel","Nieuwe lading","Lading + voertuig","Extra informatie","Telefoonnummer","Bijv. meubels, pallets, huisraad","Bijv. bestelbus, vrachtwagen, trekker","Bijv. ParijsâLyon","Bijv. 12 ton / 35 mÂ³","Bijv. zeil, gesloten bak, koelwagen","Nieuwe advertentie toegevoegd!","Opgeslagen!","Alleen op dit apparaat.","CargoBridge â¢ Lading en voertuigen verbinden"],
+pl:["ZnajdÅº Åadunek i zarabiaj na trasie","PoÅÄcz Åadunki i pojazdy bezpoÅrednio.","ZnajdÅº odpowiednie Åadunki lub pojazd dla swoich towarÃ³w.","Szukaj ÅadunkÃ³w","Szukaj pojazdu","Zarejestruj pojazd","Oferty ÅadunkÃ³w","Dodaj Åadunek","SkÄd","DokÄd","Rodzaj towaru","Wymagany pojazd","Data zaÅadunku","Cena / oferta","OgÅoszeniodawca","Telefon","Opis","Szukaj","Wszystkie","Lokalny","MiÄdzymiastowy","MiÄdzynarodowy","Opublikuj","Zapisz","ImiÄ / firma","ÅadownoÅÄ","Typ zabudowy","Obszary / trasy","Opcje kontaktu","PokaÅ¼ telefon","PokaÅ¼ WhatsApp","PokaÅ¼ Telegram","Åadunki powrotne","Unikaj pustych przebiegÃ³w i szukaj ÅadunkÃ³w na trasie.","To pole jest wymagane.","Brak pasujÄcych ofert.","Brak zarejestrowanych pojazdÃ³w.","Demo: dane przechowywane tylko w tej przeglÄdarce. Konta i powiadomienia nie sÄ aktywne.","JÄzyk","Kontakt","Åadunki","Pojazdy","Profil pojazdu","Nowy Åadunek","Åadunek + pojazd","Dodatkowe informacje","Numer telefonu","Np. meble, palety, wyposaÅ¼enie domu","Np. furgon, ciÄÅ¼arÃ³wka, ciÄgnik siodÅowy","Np. ParyÅ¼âLyon","Np. 12 ton / 35 mÂ³","Np. plandeka, zabudowa zamkniÄta, chÅodnia","Dodano ogÅoszenie!","Zapisano!","Tylko na tym urzÄdzeniu.","CargoBridge â¢ ÅÄczymy Åadunki i pojazdy"],
+ru:["ÐÐ°Ð¹Ð´Ð¸ÑÐµ Ð³ÑÑÐ· Ð¸ Ð·Ð°ÑÐ°Ð±Ð¾ÑÐ°Ð¹ÑÐµ Ð½Ð° Ð¼Ð°ÑÑÑÑÑÐµ","Ð¡Ð¾ÐµÐ´Ð¸Ð½ÑÐµÐ¼ Ð³ÑÑÐ·Ñ Ð¸ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ Ð½Ð°Ð¿ÑÑÐ¼ÑÑ.","ÐÐ°Ð¹Ð´Ð¸ÑÐµ Ð¿Ð¾Ð´ÑÐ¾Ð´ÑÑÐ¸Ð¹ Ð³ÑÑÐ· Ð¸Ð»Ð¸ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ Ð´Ð»Ñ ÑÐ²Ð¾ÐµÐ³Ð¾ ÑÐ¾Ð²Ð°ÑÐ°.","ÐÐ°Ð¹ÑÐ¸ Ð³ÑÑÐ·","ÐÐ°Ð¹ÑÐ¸ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ","ÐÐ¾Ð±Ð°Ð²Ð¸ÑÑ Ð¼Ð¾Ð¹ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ","ÐÐ±ÑÑÐ²Ð»ÐµÐ½Ð¸Ñ Ð¾ Ð³ÑÑÐ·Ð°Ñ","Ð Ð°Ð·Ð¼ÐµÑÑÐ¸ÑÑ Ð³ÑÑÐ·","ÐÑÐºÑÐ´Ð°","ÐÑÐ´Ð°","Ð¢Ð¸Ð¿ Ð³ÑÑÐ·Ð°","ÐÑÐ¶Ð½ÑÐ¹ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ","ÐÐ°ÑÐ° Ð¿Ð¾Ð³ÑÑÐ·ÐºÐ¸","Ð¦ÐµÐ½Ð° / Ð¿ÑÐµÐ´Ð»Ð¾Ð¶ÐµÐ½Ð¸Ðµ","ÐÐ²ÑÐ¾Ñ","Ð¢ÐµÐ»ÐµÑÐ¾Ð½","ÐÐ¿Ð¸ÑÐ°Ð½Ð¸Ðµ","ÐÐ¾Ð¸ÑÐº","ÐÑÐµ","ÐÐ¾ Ð³Ð¾ÑÐ¾Ð´Ñ","ÐÐµÐ¶Ð´ÑÐ³Ð¾ÑÐ¾Ð´Ð½Ð¸Ð¹","ÐÐµÐ¶Ð´ÑÐ½Ð°ÑÐ¾Ð´Ð½ÑÐ¹","ÐÐ¿ÑÐ±Ð»Ð¸ÐºÐ¾Ð²Ð°ÑÑ","Ð¡Ð¾ÑÑÐ°Ð½Ð¸ÑÑ","ÐÐ¼Ñ / ÐºÐ¾Ð¼Ð¿Ð°Ð½Ð¸Ñ","ÐÑÑÐ·Ð¾Ð¿Ð¾Ð´ÑÑÐ¼Ð½Ð¾ÑÑÑ","Ð¢Ð¸Ð¿ ÐºÑÐ·Ð¾Ð²Ð°","Ð Ð°Ð±Ð¾ÑÐ¸Ðµ ÑÐµÐ³Ð¸Ð¾Ð½Ñ / Ð¼Ð°ÑÑÑÑÑÑ","Ð¡Ð¿Ð¾ÑÐ¾Ð±Ñ ÑÐ²ÑÐ·Ð¸","ÐÐ¾ÐºÐ°Ð·ÑÐ²Ð°ÑÑ ÑÐµÐ»ÐµÑÐ¾Ð½","ÐÐ¾ÐºÐ°Ð·ÑÐ²Ð°ÑÑ WhatsApp","ÐÐ¾ÐºÐ°Ð·ÑÐ²Ð°ÑÑ Telegram","ÐÐ±ÑÐ°ÑÐ½ÑÐµ Ð³ÑÑÐ·Ñ","ÐÐ·Ð±ÐµÐ³Ð°Ð¹ÑÐµ Ð¿ÑÑÑÑÑ ÑÐµÐ¹ÑÐ¾Ð² â Ð¸ÑÐ¸ÑÐµ Ð³ÑÑÐ· Ð¿Ð¾ Ð¼Ð°ÑÑÑÑÑÑ.","ÐÐ±ÑÐ·Ð°ÑÐµÐ»ÑÐ½Ð¾Ðµ Ð¿Ð¾Ð»Ðµ.","ÐÐ¾Ð´ÑÐ¾Ð´ÑÑÐ¸Ñ Ð¾Ð±ÑÑÐ²Ð»ÐµÐ½Ð¸Ð¹ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð¾.","Ð¢ÑÐ°Ð½ÑÐ¿Ð¾ÑÑ Ð¿Ð¾ÐºÐ° Ð½Ðµ Ð·Ð°ÑÐµÐ³Ð¸ÑÑÑÐ¸ÑÐ¾Ð²Ð°Ð½.","ÐÐµÐ¼Ð¾: Ð´Ð°Ð½Ð½ÑÐµ ÑÑÐ°Ð½ÑÑÑÑ ÑÐ¾Ð»ÑÐºÐ¾ Ð² ÑÑÐ¾Ð¼ Ð±ÑÐ°ÑÐ·ÐµÑÐµ. ÐÐºÐºÐ°ÑÐ½ÑÑ Ð¸ ÑÐ²ÐµÐ´Ð¾Ð¼Ð»ÐµÐ½Ð¸Ñ Ð¿Ð¾ÐºÐ° Ð½Ðµ ÑÐ°Ð±Ð¾ÑÐ°ÑÑ.","Ð¯Ð·ÑÐº","ÐÐ¾Ð½ÑÐ°ÐºÑ","ÐÑÑÐ·Ñ","Ð¢ÑÐ°Ð½ÑÐ¿Ð¾ÑÑ","ÐÑÐ¾ÑÐ¸Ð»Ñ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑÐ°","ÐÐ¾Ð²ÑÐ¹ Ð³ÑÑÐ·","ÐÑÑÐ· + ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ","ÐÐ¾Ð¿Ð¾Ð»Ð½Ð¸ÑÐµÐ»ÑÐ½Ð°Ñ Ð¸Ð½ÑÐ¾ÑÐ¼Ð°ÑÐ¸Ñ","ÐÐ¾Ð¼ÐµÑ ÑÐµÐ»ÐµÑÐ¾Ð½Ð°","ÐÐ°Ð¿Ñ. Ð¼ÐµÐ±ÐµÐ»Ñ, Ð¿Ð°Ð»Ð»ÐµÑÑ, Ð´Ð¾Ð¼Ð°ÑÐ½Ð¸Ðµ Ð²ÐµÑÐ¸","ÐÐ°Ð¿Ñ. ÑÑÑÐ³Ð¾Ð½, Ð³ÑÑÐ·Ð¾Ð²Ð¸Ðº, ÑÑÐ³Ð°Ñ","ÐÐ°Ð¿Ñ. ÐÐ°ÑÐ¸Ð¶âÐÐ¸Ð¾Ð½","ÐÐ°Ð¿Ñ. 12 ÑÐ¾Ð½Ð½ / 35 Ð¼Â³","ÐÐ°Ð¿Ñ. ÑÐµÐ½ÑÐ¾Ð²Ð°Ð½Ð½ÑÐ¹, ÑÑÑÐ³Ð¾Ð½, ÑÐµÑÑÐ¸Ð¶ÐµÑÐ°ÑÐ¾Ñ","ÐÐ±ÑÑÐ²Ð»ÐµÐ½Ð¸Ðµ Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½Ð¾!","Ð¡Ð¾ÑÑÐ°Ð½ÐµÐ½Ð¾!","Ð¢Ð¾Ð»ÑÐºÐ¾ Ð½Ð° ÑÑÐ¾Ð¼ ÑÑÑÑÐ¾Ð¹ÑÑÐ²Ðµ.","CargoBridge â¢ ÐÑÑÐ·Ñ Ð¸ ÑÑÐ°Ð½ÑÐ¿Ð¾ÑÑ Ð²Ð¼ÐµÑÑÐµ"],
+fa:["Ø¨Ø§Ø± Ù¾ÛØ¯Ø§ Ú©ÙÛØ¯ Ù Ø§Ø² ÙØ³ÛØ± Ø®ÙØ¯ Ø¯Ø±Ø¢ÙØ¯ Ú©Ø³Ø¨ Ú©ÙÛØ¯","Ø¨Ø§Ø± Ù ÙØ³ÛÙÙ ÙÙÙÛÙ Ø±Ø§ ÙØ³ØªÙÛÙ Ø¨Ù ÙÙ ÙØµÙ Ú©ÙÛØ¯.","Ø¨Ø§Ø± ÙÙØ§Ø³Ø¨ Ù¾ÛØ¯Ø§ Ú©ÙÛØ¯ ÛØ§ Ø¨Ø±Ø§Û Ø¨Ø§Ø± Ø®ÙØ¯ Ø®ÙØ¯Ø±Ù Ø¨ÛØ§Ø¨ÛØ¯.","Ø¬Ø³ØªØ¬ÙÛ Ø¨Ø§Ø±","Ø¬Ø³ØªØ¬ÙÛ ÙØ³ÛÙÙ ÙÙÙÛÙ","Ø«Ø¨Øª ÙØ³ÛÙÙ ÙÙÙÛÙ ÙÙ","Ø¢Ú¯ÙÛâÙØ§Û Ø¨Ø§Ø±","Ø«Ø¨Øª Ø¨Ø§Ø±","ÙØ¨Ø¯Ø£","ÙÙØµØ¯","ÙÙØ¹ Ø¨Ø§Ø±","ÙØ³ÛÙÙ ÙÙÙÛÙ ÙÙØ±Ø¯ÙÛØ§Ø²","ØªØ§Ø±ÛØ® Ø¨Ø§Ø±Ú¯ÛØ±Û","ÙÛÙØª / Ù¾ÛØ´ÙÙØ§Ø¯","Ø«Ø¨ØªâÚ©ÙÙØ¯Ù","ØªÙÙÙ","ØªÙØ¶ÛØ­Ø§Øª","Ø¬Ø³ØªØ¬Ù","ÙÙÙ","Ø´ÙØ±Û","Ø¨ÛÙâØ´ÙØ±Û","Ø¨ÛÙâØ§ÙÙÙÙÛ","Ø§ÙØªØ´Ø§Ø±","Ø°Ø®ÛØ±Ù","ÙØ§Ù / Ø´Ø±Ú©Øª","Ø¸Ø±ÙÛØª Ø­ÙÙ","ÙÙØ¹ Ø¨Ø¯ÙÙ","ÙÙØ§Ø·Ù Ú©Ø§Ø±Û / ÙØ³ÛØ±ÙØ§","Ø±ÙØ´âÙØ§Û ØªÙØ§Ø³","ÙÙØ§ÛØ´ ØªÙÙÙ","ÙÙØ§ÛØ´ ÙØ§ØªØ³Ø§Ù¾","ÙÙØ§ÛØ´ ØªÙÚ¯Ø±Ø§Ù","ÙØ±ØµØªâÙØ§Û Ø¨Ø§Ø± Ø¨Ø±Ú¯Ø´Øª","Ø§Ø² Ø¨Ø±Ú¯Ø´Øª Ø®Ø§ÙÛ Ø¬ÙÙÚ¯ÛØ±Û Ú©ÙÛØ¯ Ù Ø¯Ø± ÙØ³ÛØ± Ø®ÙØ¯ Ø¨Ø§Ø± Ù¾ÛØ¯Ø§ Ú©ÙÛØ¯.","Ø§ÛÙ ÙÛÙØ¯ Ø§ÙØ²Ø§ÙÛ Ø§Ø³Øª.","Ø¢Ú¯ÙÛ ÙØªÙØ§Ø³Ø¨Û Ù¾ÛØ¯Ø§ ÙØ´Ø¯.","ÙÙÙØ² ÙØ³ÛÙÙâØ§Û Ø«Ø¨Øª ÙØ´Ø¯Ù Ø§Ø³Øª.","ÙØ³Ø®Ù Ø¢Ø²ÙØ§ÛØ´Û: Ø§Ø·ÙØ§Ø¹Ø§Øª ÙÙØ· Ø¯Ø± ÙØ±ÙØ±Ú¯Ø± Ø§ÛÙ Ø¯Ø³ØªÚ¯Ø§Ù Ø°Ø®ÛØ±Ù ÙÛâØ´ÙØ¯. Ø­Ø³Ø§Ø¨âÙØ§ Ù Ø§Ø¹ÙØ§ÙâÙØ§ ÙØ¹Ø§Ù ÙÛØ³ØªÙØ¯.","Ø²Ø¨Ø§Ù","ØªÙØ§Ø³","Ø¨Ø§Ø±ÙØ§","ÙØ³Ø§ÛÙ ÙÙÙÛÙ","Ù¾Ø±ÙÙØ§ÛÙ Ø®ÙØ¯Ø±Ù","Ø¨Ø§Ø± Ø¬Ø¯ÛØ¯","Ø¨Ø§Ø± + Ø®ÙØ¯Ø±Ù","Ø§Ø·ÙØ§Ø¹Ø§Øª Ø¨ÛØ´ØªØ±","Ø´ÙØ§Ø±Ù ØªÙÙÙ","ÙØ«ÙØ§Ù ÙØ¨ÙÙØ§ÙØ Ù¾Ø§ÙØªØ ÙÙØ§Ø²Ù ÙÙØ²Ù","ÙØ«ÙØ§Ù ÙÙØ Ú©Ø§ÙÛÙÙØ ØªØ±ÛÙÛ","ÙØ«ÙØ§Ù Ù¾Ø§Ø±ÛØ³âÙÛÙÙ","ÙØ«ÙØ§Ù Û±Û² ØªÙ / Û³Ûµ ÙØªØ±ÙÚ©Ø¹Ø¨","ÙØ«ÙØ§Ù ÚØ§Ø¯Ø±ÛØ ÙØ³ÙÙØ ÛØ®ÚØ§ÙâØ¯Ø§Ø±","Ø¢Ú¯ÙÛ Ø§Ø¶Ø§ÙÙ Ø´Ø¯!","Ø°Ø®ÛØ±Ù Ø´Ø¯!","ÙÙØ· Ø¯Ø± Ø§ÛÙ Ø¯Ø³ØªÚ¯Ø§Ù Ø°Ø®ÛØ±Ù Ø´Ø¯Ù Ø§Ø³Øª.","CargoBridge â¢ Ø§Ø±ØªØ¨Ø§Ø· Ø¨Ø§Ø± Ù Ø®ÙØ¯Ø±Ù"]
+};
+const vehicleBrands=["Mercedes-Benz","Volvo","MAN","Scania","DAF","Iveco","Renault Trucks","Ford","Volkswagen","Fiat","Peugeot","CitroÃ«n","Isuzu","Toyota","Mitsubishi","Hyundai","Kia","DiÄer / Other"];
+const vehicleModels:Record<string,string[]>={
+"Mercedes-Benz":["Actros","Arocs","Atego","Axor","Sprinter","Vito"],"Volvo":["FH","FH Aero","FM","FMX","FE","FL"],"MAN":["TGX","TGS","TGM","TGL","TGE"],"Scania":["R Serisi","S Serisi","G Serisi","P Serisi","L Serisi"],"DAF":["XF","XG","XG+","CF","LF"],"Iveco":["S-Way","T-Way","Eurocargo","Daily"],"Renault Trucks":["T","C","K","D","Master"],"Ford":["F-MAX","Transit","Transit Custom","Ranger"],"Volkswagen":["Crafter","Transporter","Amarok","Caddy"],"Fiat":["Ducato","Scudo","Doblo","Fiorino"],"Peugeot":["Boxer","Expert","Partner"],"CitroÃ«n":["Jumper","Jumpy","Berlingo"],"Isuzu":["N-Series","F-Series","D-Max"],"Toyota":["Hilux","Proace","Proace Max"],"Mitsubishi":["Fuso Canter","L200"],"Hyundai":["Mighty","Xcient","Staria"],"Kia":["Bongo","PV5"],"DiÄer / Other":["DiÄer model / Other model"]};
+const vehicleCategories=["Ãekici + dorse / Tractor + trailer","Kamyon / Rigid truck","Hafif ticari / Van or pickup","AraÃ§ taÅÄ±ma / Car transporter","VinÃ§ veya manipÃ¼latÃ¶r / Crane","AÄÄ±r nakliye / Heavy haulage","Ä°Å makinesi / Construction machinery","Ev taÅÄ±ma veya kurye / Moving or parcel delivery","DiÄer / Other"];
+const trailerTypes=["Tenteli / Curtain-side","KapalÄ± kasa / Box","AÃ§Ä±k platform / Flatbed","Frigorifik / Refrigerated","Mega","Konteyner taÅÄ±yÄ±cÄ± / Container carrier","Damper / Tipper","Tanker","Lowbed / Low-loader","Dorse yok / No trailer","DiÄer / Other"];
+const availabilityLabels:Record<Availability,{tr:string;en:string}>= {available_now:{tr:"Åimdi mÃ¼sait",en:"Available now"},available_at:{tr:"Belirli tarihte mÃ¼sait",en:"Available at a scheduled time"},busy:{tr:"TaÅÄ±mada / meÅgul",en:"Busy / on a job"},return_load:{tr:"DÃ¶nÃ¼Å yÃ¼kÃ¼ arÄ±yor",en:"Looking for a return load"},unavailable:{tr:"GeÃ§ici olarak mÃ¼sait deÄil",en:"Temporarily unavailable"}};
+const samples:Load[]=[
+{id:"s1",from:"Paris, France",to:"Lyon, France",cargo:"Furniture and boxes",vehicle:"Van / small truck",date:"2026-11-02",price:"â¬450 / offer",owner:"Demo customer",phone:"",notes:"Household goods, careful handling required."},
+{id:"s2",from:"Lyon, France",to:"Istanbul, TÃ¼rkiye",cargo:"Palletized goods",vehicle:"Truck / semi-trailer",date:"2026-11-04",price:"Offer requested",owner:"Demo company",phone:"",notes:"International route Â· example listing"},
+{id:"s3",from:"Marseille, France",to:"Nice, France",cargo:"Appliances",vehicle:"Van",date:"2026-11-01",price:"â¬180",owner:"Demo customer",phone:"",notes:"Fridge and washing machine"}
+];
+function getSaved<T,>(key:string,fallback:T):T{try{const v=localStorage.getItem(key);return v?JSON.parse(v) as T:fallback}catch{return fallback}}
+export default function App(){
+const initial=(()=>{const saved=localStorage.getItem("cb-language") as Lang|null;if(saved&&dict[saved])return saved;const b=(navigator.language||"en").toLowerCase();return b.startsWith("fa")?"fa":(langs.find(l=>b.startsWith(l.code))?.code||"en")})() as Lang;
+const [lang,setLang]=useState<Lang>(initial), t=dict[lang], rtl=lang==="fa";
+const [tab,setTab]=useState<"loads"|"vehicles"|"add"|"profile">("loads");
+const [loads,setLoads]=useState<Load[]>(()=>getSaved("cb-loads",samples));
+const [drivers,setDrivers]=useState<Driver[]>(()=>getSaved("cb-drivers",[]));
+const [query,setQuery]=useState(""),[notice,setNotice]=useState("");
+const [lf,setLf]=useState({from:"",to:"",cargo:"",vehicle:"",date:"",price:"",owner:"",phone:"",notes:""});
+const [df,setDf]=useState({name:"",vehicle:"",capacity:"",body:"",areas:"",phone:"",whatsapp:true,telegram:false,phoneVisible:false,notes:"",category:vehicleCategories[0],make:"Mercedes-Benz",model:"Actros",year:String(new Date().getFullYear()),customMake:"",customModel:"",trailerType:trailerTypes[0],trailerMake:"",trailerModel:"",trailerYear:"",trailerLength:"",trailerWidth:"",trailerHeight:"",trailerPayload:"",palletCapacity:"",rearDoorWidth:"",rearDoorHeight:"",loadingSides:[] as string[],tieDowns:[] as string[],equipment:[] as string[],availability:"available_now" as Availability,availableAt:"",lookingForLoads:false});
+useEffect(()=>{localStorage.setItem("cb-language",lang);document.documentElement.lang=lang;document.documentElement.dir=rtl?"rtl":"ltr"},[lang,rtl]);
+useEffect(()=>localStorage.setItem("cb-loads",JSON.stringify(loads)),[loads]);useEffect(()=>localStorage.setItem("cb-drivers",JSON.stringify(drivers)),[drivers]);
+const shown=useMemo(()=>loads.filter(x=>`${x.from} ${x.to} ${x.cargo} ${x.vehicle} ${x.notes}`.toLowerCase().includes(query.toLowerCase())),[loads,query]);
+const go=(v:typeof tab)=>{setTab(v);setNotice("");window.scrollTo({top:0,behavior:"smooth"})};
+const field=(label:string,value:string,onChange:(v:string)=>void,placeholder:string,required=false,type="text")=><label className="field"><span>{label}{required?" *":""}</span><input type={type} value={value} placeholder={placeholder} required={required} onChange={e=>onChange(e.target.value)}/></label>;
+function addLoad(e:React.FormEvent){e.preventDefault();if(!lf.from.trim()||!lf.to.trim()||!lf.cargo.trim()){setNotice(t[34]);return}setLoads(p=>[{...lf,id:crypto.randomUUID(),owner:lf.owner||"CargoBridge user"},...p]);setLf({from:"",to:"",cargo:"",vehicle:"",date:"",price:"",owner:"",phone:"",notes:""});setNotice(t[52]);go("loads")}
+function addDriver(e:React.FormEvent){e.preventDefault();if(!df.name.trim()||!df.make||!df.model||!df.areas.trim()){setNotice(t[34]);return}const vehicleText=[df.category,df.make==="DiÄer / Other"?(df.customMake||df.make):df.make,df.model==="DiÄer model / Other model"?(df.customModel||df.model):df.model,df.year].filter(Boolean).join(" Â· ");const description=[vehicleText,df.capacity&&`Kapasite: ${df.capacity}`,df.trailerType&&`Dorse: ${df.trailerType}`,df.trailerLength&&df.trailerWidth&&df.trailerHeight&&`Ä°Ã§ Ã¶lÃ§Ã¼: ${df.trailerLength} Ã ${df.trailerWidth} Ã ${df.trailerHeight} m`,df.trailerPayload&&`Dorse taÅÄ±ma kapasitesi: ${df.trailerPayload}`,df.trailerMake&&`Dorse markasÄ±: ${df.trailerMake}`,df.trailerModel&&`Dorse modeli: ${df.trailerModel}`,df.trailerYear&&`Dorse yÄ±lÄ±: ${df.trailerYear}`,df.palletCapacity&&`Palet kapasitesi: ${df.palletCapacity}`,df.rearDoorWidth&&df.rearDoorHeight&&`Arka kapÄ±: ${df.rearDoorWidth} Ã ${df.rearDoorHeight} m`,df.loadingSides.length&&`YÃ¼kleme yÃ¶nleri: ${df.loadingSides.join(", ")}`,df.equipment.length&&`Ekipman: ${df.equipment.join(", ")}`,df.tieDowns.length&&`Sabitleme: ${df.tieDowns.join(", ")}`,df.areas&&`GÃ¼zergÃ¢h: ${df.areas}`,df.notes].filter(Boolean).join(" | ");setDrivers(p=>[{...df,vehicle:vehicleText,body:df.trailerType,notes:description,id:crypto.randomUUID(),phone:df.phoneVisible?df.phone:""},...p]);setDf({name:"",vehicle:"",capacity:"",body:"",areas:"",phone:"",whatsapp:true,telegram:false,phoneVisible:false,notes:"",category:vehicleCategories[0],make:"Mercedes-Benz",model:"Actros",year:String(new Date().getFullYear()),customMake:"",customModel:"",trailerType:trailerTypes[0],trailerMake:"",trailerModel:"",trailerYear:"",trailerLength:"",trailerWidth:"",trailerHeight:"",trailerPayload:"",palletCapacity:"",rearDoorWidth:"",rearDoorHeight:"",loadingSides:[],tieDowns:[],equipment:[],availability:"available_now",availableAt:"",lookingForLoads:false});setNotice(t[53]);go("vehicles")}
+function updateDriver(id:string,patch:Partial<Driver>){setDrivers(p=>p.map(d=>d.id===id?{...d,...patch}:d))}
+const isTr=lang==="tr";const label=(tr:string,en:string)=>isTr?tr:en;
+return <div className="shell"><header className="top"><button className="brand" onClick={()=>go("loads")}><span className="mark">CB</span><span>Cargo<span className="light">Bridge</span><small>{t[0]}</small></span></button><label className="lang">ð <select aria-label={t[36]} value={lang} onChange={e=>setLang(e.target.value as Lang)}>{langs.map(l=><option key={l.code} value={l.code}>{l.flag} {l.label}</option>)}</select></label></header>
+<main><section className="hero"><div className="copy"><span className="eyebrow">ð CARGOBRIDGE</span><h1>{t[1]}</h1><p>{t[2]}</p><div className="actions"><button className="primary" onClick={()=>go("loads")}>{t[3]} â</button><button className="outline" onClick={()=>go("add")}>{t[4]} +</button></div></div><div className="art"><div className="road"></div><span className="truck">ð</span><span className="chip">ð {t[44]}</span></div></section>
+<div className="demo">â¹ï¸ <span>{t[37]}</span></div>{notice&&<div className="notice">{notice}</div>}
+<section className="shortcuts"><button onClick={()=>go("loads")}><i>ð¦</i><span><b>{t[3]}</b><small>{lang==="tr"?"Uygun yÃ¼kleri keÅfet":"Browse available loads"}</small></span>â</button><button onClick={()=>go("vehicles")}><i>ð</i><span><b>{t[4]}</b><small>{lang==="tr"?"TaÅÄ±yÄ±cÄ± ve araÃ§larÄ± bul":"Browse carrier profiles"}</small></span>â</button><button onClick={()=>go("profile")}><i>ðªª</i><span><b>{t[5]}</b><small>{lang==="tr"?"AracÄ±nÄ± ve gÃ¼zergÃ¢hÄ±nÄ± ekle":"Add vehicle and routes"}</small></span>â</button></section>
+{tab==="loads"&&<section className="section"><div className="heading"><div><span className="eyebrow">{t[40].toUpperCase()}</span><h2>{t[6]}</h2></div><button className="primary" onClick={()=>go("add")}>ï¼ {t[7]}</button></div><input className="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder={`â ${lang==="tr"?"Åehir, Ã¼lke veya yÃ¼k araâ¦":"Search city, country or cargoâ¦"}`}/><div className="backhaul"><b>â© {t[32]}</b><p>{t[33]}</p></div><div className="list">{shown.map(l=><article className="card" key={l.id}><div className="route"><div><small>{t[8]}</small><b>{l.from}</b></div><span>â¶</span><div><small>{t[9]}</small><b>{l.to}</b></div></div><div className="tags"><span>ð¦ {l.cargo}</span>{l.vehicle&&<span>ð {l.vehicle}</span>}{l.date&&<span>ð {l.date}</span>}</div>{l.notes&&<p className="notes">{l.notes}</p>}<div className="bottom"><div><small>{t[13]}</small><b className="price">{l.price||"â"}</b></div><div><small>{t[14]}</small><b>{l.owner||"CargoBridge user"}</b></div>{l.phone&&<a href={`tel:${l.phone}`} className="contact">â {t[39]}</a>}</div></article>)}</div>{!shown.length&&<div className="empty">ð<p>{t[35]}</p></div>}</section>}
+{tab==="add"&&<section className="section formbox"><div className="heading"><div><span className="eyebrow">{t[4].toUpperCase()}</span><h2>{t[7]}</h2></div><span>ð¦</span></div><form className="form" onSubmit={addLoad}>{field(t[8],lf.from,v=>setLf({...lf,from:v}),"Paris, France",true)}{field(t[9],lf.to,v=>setLf({...lf,to:v}),"Lyon, France",true)}{field(t[10],lf.cargo,v=>setLf({...lf,cargo:v}),t[47],true)}{field(t[11],lf.vehicle,v=>setLf({...lf,vehicle:v}),t[48])}{field(t[12],lf.date,v=>setLf({...lf,date:v}),"",false,"date")}{field(t[13],lf.price,v=>setLf({...lf,price:v}),"â¬500 / offer")}{field(t[14],lf.owner,v=>setLf({...lf,owner:v}),t[24])}{field(t[15],lf.phone,v=>setLf({...lf,phone:v}),t[46])}<label className="field full"><span>{t[16]}</span><textarea value={lf.notes} onChange={e=>setLf({...lf,notes:e.target.value})} placeholder={t[45]}/></label><div className="full actions"><button type="button" className="outline lightbtn" onClick={()=>go("loads")}>{t[6]}</button><button className="primary">{t[22]} â</button></div></form></section>}
+{tab==="profile"&&<section className="section formbox"><div className="heading"><div><span className="eyebrow">{t[3].toUpperCase()}</span><h2>{t[42]}</h2></div><span>ð</span></div><form className="form" onSubmit={addDriver}>
+<div className="full vehicle-form-section"><h3>1. {label("AraÃ§ bilgileri","Vehicle information")}</h3><p>{label("Bilgileri listeden seÃ§in; teknik kapasiteyi yalnÄ±zca araÃ§ belgenizde doÄrulayabiliyorsanÄ±z girin.","Choose from the lists. Enter capacity only when you can verify it from the vehicle documents.")}</p></div>
+{field(t[24],df.name,v=>setDf({...df,name:v}),t[24],true)}
+<label className="field"><span>{label("AraÃ§ grubu","Vehicle category")} *</span><select value={df.category} onChange={e=>setDf({...df,category:e.target.value})} required>{vehicleCategories.map(x=><option key={x}>{x}</option>)}</select></label>
+<label className="field"><span>{label("Marka","Make")} *</span><select value={df.make} onChange={e=>{const m=e.target.value;setDf({...df,make:m,model:(vehicleModels[m]||["Other model"])[0]})} } required>{vehicleBrands.map(x=><option key={x}>{x}</option>)}</select></label>
+<label className="field"><span>{label("Model","Model")} *</span><select value={df.model} onChange={e=>setDf({...df,model:e.target.value})} required>{(vehicleModels[df.make]||["Other model"]).map(x=><option key={x}>{x}</option>)}</select></label>
+{df.make==="DiÄer / Other"&&field(label("Marka (diÄer)","Other make"),df.customMake,v=>setDf({...df,customMake:v}),label("MarkayÄ± yazÄ±n","Enter make"),true)}
+{(df.make==="DiÄer / Other"||df.model==="DiÄer model / Other model")&&field(label("Model (diÄer)","Other model"),df.customModel,v=>setDf({...df,customModel:v}),label("Modeli yazÄ±n","Enter model"),true)}
+<label className="field"><span>{label("Model yÄ±lÄ±","Model year")}</span><select value={df.year} onChange={e=>setDf({...df,year:e.target.value})}>{Array.from({length:2026-1990+1},(_,i)=>String(2026-i)).map(y=><option key={y}>{y}</option>)}</select></label>
+{field(label("TaÅÄ±ma kapasitesi","Load capacity"),df.capacity,v=>setDf({...df,capacity:v}),label("Ãrn. 12 ton / 35 mÂ³","e.g. 12 tonnes / 35 mÂ³"))}
+<div className="full vehicle-form-section"><h3>2. {label("Dorse / kasa bilgileri","Trailer / body details")}</h3><p>{label("Ãekici ve dorse ayrÄ± kayÄ±tlar olarak ele alÄ±nacaktÄ±r; burada bu araÃ§la kullanÄ±lacak dorseyi belirtin.","The tractor and trailer can be managed separately; describe the trailer used with this vehicle here.")}</p></div>
+<label className="field"><span>{label("Dorse / kasa tipi","Trailer / body type")}</span><select value={df.trailerType} onChange={e=>setDf({...df,trailerType:e.target.value})}>{trailerTypes.map(x=><option key={x}>{x}</option>)}</select></label>
+{field(label("Dorse markasÄ±","Trailer make"),df.trailerMake,v=>setDf({...df,trailerMake:v}),label("Ãrn. Krone, Schmitz","e.g. Krone, Schmitz"))}
+{field(label("Dorse modeli","Trailer model"),df.trailerModel,v=>setDf({...df,trailerModel:v}),label("Model","Model"))}
+<label className="field"><span>{label("Dorse model yÄ±lÄ±","Trailer year")}</span><select value={df.trailerYear} onChange={e=>setDf({...df,trailerYear:e.target.value})}><option value="">â</option>{Array.from({length:2026-1990+1},(_,i)=>String(2026-i)).map(y=><option key={y}>{y}</option>)}</select></label>
+{field(label("Ä°Ã§ uzunluk (m)","Inner length (m)"),df.trailerLength,v=>setDf({...df,trailerLength:v}),"13.6",false,"number")}
+{field(label("Ä°Ã§ geniÅlik (m)","Inner width (m)"),df.trailerWidth,v=>setDf({...df,trailerWidth:v}),"2.45",false,"number")}
+{field(label("Ä°Ã§ yÃ¼kseklik (m)","Inner height (m)"),df.trailerHeight,v=>setDf({...df,trailerHeight:v}),"2.70",false,"number")}
+{field(label("Dorse azami yÃ¼k kapasitesi","Trailer max payload"),df.trailerPayload,v=>setDf({...df,trailerPayload:v}),label("Ãrn. 24 ton (belgeye gÃ¶re)","e.g. 24 tonnes (verify from documents)"))}
+{field(label("Palet kapasitesi (adet)","Pallet capacity (units)"),df.palletCapacity,v=>setDf({...df,palletCapacity:v}),"33",false,"number")}
+{field(label("Arka kapÄ± geniÅliÄi (m)","Rear door width (m)"),df.rearDoorWidth,v=>setDf({...df,rearDoorWidth:v}),"2.45",false,"number")}
+{field(label("Arka kapÄ± yÃ¼ksekliÄi (m)","Rear door height (m)"),df.rearDoorHeight,v=>setDf({...df,rearDoorHeight:v}),"2.65",false,"number")}
+<div className="full checks"><b>{label("YÃ¼kleme yÃ¶nleri","Loading access")}</b>{["Arka / Rear","SaÄ yan / Right side","Sol yan / Left side","Ãstten / Top"].map(x=><label key={x}><input type="checkbox" checked={df.loadingSides.includes(x)} onChange={e=>setDf({...df,loadingSides:e.target.checked?[...df.loadingSides,x]:df.loadingSides.filter(v=>v!==x)})}/>{isTr?x.split(" / ")[0]:x.split(" / ")[1]}</label>)}</div>
+<div className="full vehicle-form-section"><h3>3. {label("TaÅÄ±ma Ã¶zellikleri","Transport capabilities")}</h3></div>
+<div className="full checks"><label><input type="checkbox" checked={df.equipment.includes("SoÄutmalÄ± / Refrigerated")} onChange={e=>setDf({...df,equipment:e.target.checked?[...df.equipment,"SoÄutmalÄ± / Refrigerated"]:df.equipment.filter(x=>x!=="SoÄutmalÄ± / Refrigerated")})}/>{label("SoÄutmalÄ± taÅÄ±ma","Refrigerated transport")}</label><label><input type="checkbox" checked={df.equipment.includes("Yan yÃ¼kleme / Side loading")} onChange={e=>setDf({...df,equipment:e.target.checked?[...df.equipment,"Yan yÃ¼kleme / Side loading"]:df.equipment.filter(x=>x!=="Yan yÃ¼kleme / Side loading")})}/>{label("Yan yÃ¼kleme","Side loading")}</label><label><input type="checkbox" checked={df.equipment.includes("Ãstten yÃ¼kleme / Top loading")} onChange={e=>setDf({...df,equipment:e.target.checked?[...df.equipment,"Ãstten yÃ¼kleme / Top loading"]:df.equipment.filter(x=>x!=="Ãstten yÃ¼kleme / Top loading")})}/>{label("Ãstten yÃ¼kleme","Top loading")}</label><label><input type="checkbox" checked={df.equipment.includes("ADR sertifikalÄ±")} onChange={e=>setDf({...df,equipment:e.target.checked?[...df.equipment,"ADR sertifikalÄ±"]:df.equipment.filter(x=>x!=="ADR sertifikalÄ±")})}/>{label("ADR (yalnÄ±zca sertifikalÄ±ysa)","ADR (only if certified)")}</label><label><input type="checkbox" checked={df.equipment.includes("Lift / Tail lift")} onChange={e=>setDf({...df,equipment:e.target.checked?[...df.equipment,"Lift / Tail lift"]:df.equipment.filter(x=>x!=="Lift / Tail lift")})}/>{label("Lift / hidrolik platform","Tail lift")}</label></div>
 
-type Modal = 'new-load' | 'offer' | 'details' | null;
-
-const countries = ['Tümü', 'Türkiye', 'Rusya', 'İran', 'Kazakistan'];
-const vehicles = ['Tenteli tır', 'Kapalı kasa', 'Frigorifik', 'Mega dorse', 'Kamyon', 'Lowbed'];
-const currencySymbol: Record<string, string> = { TRY: '₺', RUB: '₽', EUR: '€', USD: '$' };
-
-function money(price: number | null, currency: string) {
-  return price == null ? 'Teklif bekleniyor' : `${currencySymbol[currency] ?? ''}${price.toLocaleString('tr-TR')}`;
+<div className="full checks"><b>{label("Ek ekipman ve sabitleme","Extra equipment and securing")}</b>
+{["Forklift","VinÃ§ / Crane","ManipÃ¼latÃ¶r / Loader crane","Rampa / Ramp","HalatlÄ± vinÃ§ / Winch","Ä°stiflenebilir yÃ¼k / Stackable cargo"].map(x=><label key={x}><input type="checkbox" checked={df.equipment.includes(x)} onChange={e=>setDf({...df,equipment:e.target.checked?[...df.equipment,x]:df.equipment.filter(v=>v!==x)})}/>{isTr?x.split(" / ")[0]:x.includes(" / ")?x.split(" / ")[1]:x}</label>)}
+{["Sapan / Straps","Zincir / Chains","KÃ¶Åe koruyucu / Corner protectors"].map(x=><label key={x}><input type="checkbox" checked={df.tieDowns.includes(x)} onChange={e=>setDf({...df,tieDowns:e.target.checked?[...df.tieDowns,x]:df.tieDowns.filter(v=>v!==x)})}/>{isTr?x.split(" / ")[0]:x.split(" / ")[1]}</label>)}
+</div>
+<div className="full vehicle-form-section"><h3>4. {label("GÃ¼zergÃ¢h ve mÃ¼saitlik","Service area and availability")}</h3></div>
+{field(t[27],df.areas,v=>setDf({...df,areas:v}),t[49],true)}
+<label className="field"><span>{label("MÃ¼saitlik durumu","Availability status")}</span><select value={df.availability} onChange={e=>setDf({...df,availability:e.target.value as Availability})}>{Object.entries(availabilityLabels).map(([key,val])=><option key={key} value={key}>{isTr?val.tr:val.en}</option>)}</select></label>
+{df.availability==="available_at"&&field(label("MÃ¼sait olacaÄÄ± tarih ve saat","Available date and time"),df.availableAt,v=>setDf({...df,availableAt:v}),"",true,"datetime-local")}
+<label className="field full"><span>{label("AraÃ§ aÃ§Ä±klamasÄ± / ek bilgi","Vehicle description / extra notes")}</span><textarea value={df.notes} onChange={e=>setDf({...df,notes:e.target.value})} placeholder={t[45]}/></label>
+{field(t[15],df.phone,v=>setDf({...df,phone:v}),t[46])}
+<div className="full checks"><b>{t[28]}</b><label><input type="checkbox" checked={df.phoneVisible} onChange={e=>setDf({...df,phoneVisible:e.target.checked})}/>{t[29]}</label><label><input type="checkbox" checked={df.whatsapp} onChange={e=>setDf({...df,whatsapp:e.target.checked})}/>{t[30]}</label><label><input type="checkbox" checked={df.telegram} onChange={e=>setDf({...df,telegram:e.target.checked})}/>{t[31]}</label><small>{label("Telefon numaranÄ±z, gÃ¶rÃ¼nÃ¼rlÃ¼ÄÃ¼ aÃ§madÄ±kÃ§a ilan kartÄ±nda gÃ¶sterilmez.","Your phone number is not shown on the listing unless you enable visibility.")}</small></div>
+<div className="full actions"><button type="button" className="outline lightbtn" onClick={()=>go("vehicles")}>{t[39]}</button><button className="primary">{t[23]} â</button></div></form></section>}
+{tab==="vehicles"&&<section className="section"><div className="heading"><div><span className="eyebrow">{t[39].toUpperCase()}</span><h2>{t[4]}</h2></div><button className="primary" onClick={()=>go("profile")}>ï¼ {t[5]}</button></div>{drivers.length===0?<div className="empty">ð<p>{t[36]}</p><button className="outline lightbtn" onClick={()=>go("profile")}>{t[5]}</button></div>:<div className="list">{drivers.map(d=><article className="card" key={d.id}><h3>ð {d.name}</h3><p>{d.vehicle} Â· {d.body}</p><div className="tags">{d.capacity&&<span>âï¸ {d.capacity}</span>}<span>ð {d.areas}</span>{d.year&&<span>ð {d.year}</span>}</div><div className="availability-box"><label className="field"><span>{label("MÃ¼saitlik","Availability")}</span><select value={d.availability||"available_now"} onChange={e=>{const av=e.target.value as Availability;updateDriver(d.id,{availability:av,lookingForLoads:(av==="available_now"||av==="return_load")?d.lookingForLoads:false})}}>{Object.entries(availabilityLabels).map(([key,val])=><option key={key} value={key}>{isTr?val.tr:val.en}</option>)}</select></label>{d.availability==="available_at"&&<label className="field"><span>{label("MÃ¼sait olacaÄÄ± zaman","Available at")}</span><input type="datetime-local" value={d.availableAt||""} onChange={e=>updateDriver(d.id,{availableAt:e.target.value})}/></label>}<label className="load-toggle"><input type="checkbox" checked={!!d.lookingForLoads} disabled={d.availability==="busy"||d.availability==="unavailable"} onChange={e=>updateDriver(d.id,{lookingForLoads:e.target.checked,availability:e.target.checked&&d.availability==="unavailable"?"available_now":d.availability})}/><span><b>{label("YÃ¼k aramaya aÃ§Ä±k","Looking for loads")}</b><small>{label("Bu araÃ§ iÃ§in ayrÄ± ayrÄ± aÃ§Ä±lÄ±p kapatÄ±lÄ±r.","This setting applies to this vehicle only.")}</small></span></label>{d.lookingForLoads&&<span className="status-pill">ð¢ {label("YÃ¼k arÄ±yor","Searching for loads")}</span>}</div>{d.notes&&<p className="notes">{d.notes}</p>}<div className="actions">{d.phone&&<a className="contact" href={`tel:${d.phone}`}>â {t[15]}</a>}{d.whatsapp&&d.phone&&<a className="contact" href={`https://wa.me/${d.phone.replace(/\D/g,"")}`} target="_blank" rel="noreferrer">WhatsApp</a>}{d.telegram&&<span className="tag">Telegram</span>}</div></article>)}</div>}</section>}
+</main><footer><b>CB CargoBridge</b><p>{t[55]}</p><small>Â© 2026 CargoBridge Â· Demo MVP</small></footer>
+<nav className="mobile-nav"><button className={tab==="loads"?"active":""} onClick={()=>go("loads")}>ð¦<small>{t[40]}</small></button><button className={tab==="vehicles"?"active":""} onClick={()=>go("vehicles")}>ð<small>{t[41]}</small></button><button className={tab==="add"?"active":""} onClick={()=>go("add")}>ï¼<small>{t[40]}</small></button><button className={tab==="profile"?"active":""} onClick={()=>go("profile")}>ðªª<small>{t[26]}</small></button></nav></div>
 }
-
-function dateLabel(value: string) {
-  if (!value) return 'Tarih belirtilmedi';
-  return new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(`${value}T12:00:00`));
-}
-
-function App() {
-  const [loads, setLoads] = useState<LoadListing[]>(getLoads);
-  const [searchText, setSearchText] = useState('');
-  const [country, setCountry] = useState('Tümü');
-  const [route, setRoute] = useState<'all' | RouteType>('all');
-  const [vehicle, setVehicle] = useState('Tüm araçlar');
-  const [modal, setModal] = useState<Modal>(null);
-  const [selected, setSelected] = useState<LoadListing | null>(null);
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const [toast, setToast] = useState('');
-  const [tab, setTab] = useState<'loads' | 'my-loads'>('loads');
-
-  const filteredLoads = useMemo(() => loads.filter(load => {
-    if (load.status !== 'open' && tab === 'loads') return false;
-    if (tab === 'my-loads' && !load.id.startsWith('CB-')) return false;
-    if (country !== 'Tümü' && load.country !== country) return false;
-    if (route !== 'all' && load.routeType !== route) return false;
-    if (vehicle !== 'Tüm araçlar' && load.vehicleType !== vehicle) return false;
-    const query = searchText.trim().toLocaleLowerCase('tr-TR');
-    const searchable = `${load.origin} ${load.destination} ${load.cargoType} ${load.companyName} ${load.id}`.toLocaleLowerCase('tr-TR');
-    return !query || searchable.includes(query);
-  }), [loads, searchText, country, route, vehicle, tab]);
-
-  function notify(message: string) {
-    setToast(message);
-    window.setTimeout(() => setToast(''), 3200);
-  }
-
-  function handleCreate(input: NewLoadInput) {
-    const created = createLoad(input);
-    setLoads(getLoads());
-    setModal(null);
-    setTab('loads');
-    setCountry('Tümü');
-    setSearchText('');
-    notify(`İlanın oluşturuldu: ${created.id}`);
-  }
-
-  function handleOffer(loadId: string, companyName: string, price: number, currency: LoadListing['currency'], note: string) {
-    setLoads(addOffer(loadId, { companyName, price, currency, note }));
-    setModal(null);
-    setSelected(null);
-    notify('Teklif demo olarak kaydedildi.');
-  }
-
-  function showDetails(load: LoadListing) {
-    setSelected(load);
-    setModal('details');
-  }
-
-  return (
-    <div className="app-shell">
-      <header className="topbar">
-        <a className="brand" href="#" aria-label="CargoBridge ana sayfa">
-          <span className="brand-mark"><Truck size={22} strokeWidth={2.5} /></span>
-          <span>Cargo<span>Bridge</span><small>YÜK & NAKLİYE PAZARYERİ</small></span>
-        </a>
-        <nav className={mobileMenu ? 'nav-links open' : 'nav-links'}>
-          <a className="active" href="#loads" onClick={() => setMobileMenu(false)}>Yük ilanları</a>
-          <a href="#how" onClick={() => setMobileMenu(false)}>Nasıl çalışır?</a>
-          <a href="#trust" onClick={() => setMobileMenu(false)}>Güvenlik</a>
-        </nav>
-        <div className="top-actions">
-          <button className="icon-button" aria-label="Bildirimler" onClick={() => notify('Demo sürümünde bildirimler etkin değil.')}><Bell size={19} /></button>
-          <button className="button button-primary header-cta" onClick={() => setModal('new-load')}><Plus size={17} /> Yük ilanı ver</button>
-          <button className="icon-button mobile-menu" aria-label="Menüyü aç" onClick={() => setMobileMenu(!mobileMenu)}>{mobileMenu ? <X /> : <Menu />}</button>
-        </div>
-      </header>
-
-      <main>
-        <section className="hero">
-          <div className="hero-content">
-            <div className="eyebrow"><span className="pulse" /> DOĞRUDAN TAŞIMACILIK PAZARYERİ</div>
-            <h1>Yükünü bul.<br /><span>Aracını doldur.</span></h1>
-            <p>Yük sahipleri ve nakliyeciler, aracı komisyonculara ihtiyaç duymadan doğrudan buluşsun.</p>
-            <div className="hero-actions">
-              <button className="button button-light" onClick={() => document.getElementById('loads')?.scrollIntoView({ behavior: 'smooth' })}><Search size={18} /> Yük ara</button>
-              <button className="button button-outline-light" onClick={() => setModal('new-load')}><Plus size={18} /> Ücretsiz ilan oluştur</button>
-            </div>
-            <div className="hero-trust"><ShieldCheck size={17} /> Şeffaf ilanlar · Doğrudan iletişim · Kontrol sende</div>
-          </div>
-          <div className="hero-art" aria-hidden="true">
-            <div className="route-line route-line-one" />
-            <div className="route-line route-line-two" />
-            <div className="map-dot dot-one" /><div className="map-dot dot-two" /><div className="map-dot dot-three" />
-            <div className="floating-card card-route"><span className="card-icon"><Truck size={18} /></span><div><strong>İstanbul → Ankara</strong><small>Yurt içi yük</small></div><BadgeCheck size={18} className="green" /></div>
-            <div className="truck-illustration"><Truck size={145} strokeWidth={1.1} /></div>
-            <div className="floating-card card-match"><span className="match-icon"><CheckCircle2 size={20} /></span><div><strong>Doğrudan eşleşme</strong><small>Aracı olmadan iletişim</small></div></div>
-          </div>
-          <div className="hero-bottom"><span><strong>01</strong> Yükünü yayınla</span><ArrowRight size={16} /><span><strong>02</strong> Teklifleri karşılaştır</span><ArrowRight size={16} /><span><strong>03</strong> Doğrudan anlaş</span></div>
-        </section>
-
-        <section className="stats-row" aria-label="Platform özellikleri">
-          <div><span className="stat-icon"><Box size={20} /></span><div><strong>Yük ilanları</strong><small>Farklı güzergâhlar</small></div></div>
-          <div><span className="stat-icon"><Truck size={20} /></span><div><strong>Uygun araçlar</strong><small>Aracına göre filtrele</small></div></div>
-          <div><span className="stat-icon"><Globe2 size={20} /></span><div><strong>Çoklu güzergâh</strong><small>Yurt içi ve uluslararası</small></div></div>
-          <div><span className="stat-icon"><ShieldCheck size={20} /></span><div><strong>Şeffaf süreç</strong><small>Teklif ve ilan kaydı</small></div></div>
-        </section>
-
-        <section className="loads-section" id="loads">
-          <div className="section-heading">
-            <div><div className="eyebrow dark-eyebrow">NAKLİYE PAZARYERİ</div><h2>Yük ilanlarını keşfet</h2><p>Güzergâhına ve aracına uygun yükleri bul.</p></div>
-            <button className="button button-primary" onClick={() => setModal('new-load')}><Plus size={17} /> Yük ilanı ver</button>
-          </div>
-          <div className="filter-panel">
-            <label className="search-field"><Search size={19} /><input value={searchText} onChange={e => setSearchText(e.target.value)} placeholder="Şehir, yük türü veya ilan no ara..." /><kbd>⌘ K</kbd></label>
-            <label className="select-field"><Globe2 size={17} /><select value={country} onChange={e => setCountry(e.target.value)}>{countries.map(c => <option key={c}>{c}</option>)}</select><ChevronDown size={15} /></label>
-            <label className="select-field"><Truck size={17} /><select value={vehicle} onChange={e => setVehicle(e.target.value)}>{['Tüm araçlar', ...vehicles].map(v => <option key={v}>{v}</option>)}</select><ChevronDown size={15} /></label>
-            <button className="filter-button" onClick={() => { setSearchText(''); setCountry('Tümü'); setVehicle('Tüm araçlar'); setRoute('all'); }}><SlidersHorizontal size={17} /> Sıfırla</button>
-          </div>
-          <div className="tabs">
-            <button className={tab === 'loads' ? 'tab active' : 'tab'} onClick={() => setTab('loads')}>Tüm ilanlar <span>{loads.filter(l => l.status === 'open').length}</span></button>
-            <button className={tab === 'my-loads' ? 'tab active' : 'tab'} onClick={() => { setTab('my-loads'); notify('Demo sürümünde kullanıcı hesabı yok; ilanlar tarayıcıda saklanır.'); }}>İlanlarım</button>
-            <div className="route-toggle"><button className={route === 'all' ? 'selected' : ''} onClick={() => setRoute('all')}>Tümü</button><button className={route === 'domestic' ? 'selected' : ''} onClick={() => setRoute('domestic')}>Yurt içi</button><button className={route === 'international' ? 'selected' : ''} onClick={() => setRoute('international')}>Uluslararası</button></div>
-          </div>
-
-          <div className="load-list">
-            {filteredLoads.length === 0 ? <div className="empty-state"><Search size={28} /><h3>Uygun ilan bulunamadı</h3><p>Filtreleri değiştirebilir veya yeni bir ilan oluşturabilirsin.</p><button className="button button-primary" onClick={() => setModal('new-load')}>İlan oluştur</button></div> : filteredLoads.map(load => (
-              <article className="load-card" key={load.id}>
-                <div className="load-main">
-                  <div className="load-type-row"><span className={load.routeType === 'domestic' ? 'tag tag-blue' : 'tag tag-purple'}>{load.routeType === 'domestic' ? 'YURT İÇİ' : 'ULUSLARARASI'}</span><span className="load-id">{load.id}</span>{load.verified && <span className="verified"><BadgeCheck size={13} /> Firma bilgisi doğrulanmış</span>}</div>
-                  <div className="route-block">
-                    <div className="route-place"><span className="origin-dot" /><div><small>YÜKLEME</small><strong>{load.origin}</strong></div></div>
-                    <div className="route-connector"><span /><ArrowDownUp size={14} /></div>
-                    <div className="route-place"><span className="destination-dot" /><div><small>TESLİMAT</small><strong>{load.destination}</strong></div></div>
-                  </div>
-                  <div className="load-meta"><span><Box size={15} />{load.cargoType}</span><span><Truck size={15} />{load.vehicleType}</span><span>{load.weightTons} ton</span><span>{dateLabel(load.loadingDate)}</span></div>
-                  <div className="company-line"><Building2 size={15} /><span>{load.companyName}</span><span className="offer-count"><MessageSquare size={14} /> {load.offers.length} teklif</span></div>
-                </div>
-                <div className="load-side"><div><small>TAŞIMA BEDELİ</small><strong className="price">{money(load.price, load.currency)}</strong></div><button className="button button-primary card-cta" onClick={() => showDetails(load)}>İlanı incele <ArrowRight size={16} /></button><button className="text-button" onClick={() => { setSelected(load); setModal('offer'); }}>Teklif ver</button></div>
-              </article>
-            ))}
-          </div>
-          <div className="demo-note"><CircleHelp size={16} /><span><strong>Demo bilgisi:</strong> Bu ekrandaki ilanlar örnek veridir. Oluşturduğun ilanlar yalnızca bu tarayıcıda saklanır; henüz başka kullanıcılara gönderilmez.</span><button onClick={() => { setLoads(resetDemoData()); setSearchText(''); setCountry('Tümü'); notify('Örnek veriler sıfırlandı.'); }}>Örnek verileri sıfırla</button></div>
-        </section>
-
-        <section className="how-section" id="how">
-          <div className="section-heading centered"><div><div className="eyebrow dark-eyebrow">BASİT VE ŞEFFAF</div><h2>Üç adımda doğrudan eşleşme</h2><p>Yükünü paylaş, teklifleri gör, kararını kendin ver.</p></div></div>
-          <div className="steps-grid"><div className="step-card"><span className="step-number">01</span><span className="step-icon"><ClipboardList size={23} /></span><h3>Yükünü yayınla</h3><p>Güzergâhı, yük tipini, araç ihtiyacını ve tarihini gir. İlanını nakliyecilere ulaştır.</p></div><div className="step-card"><span className="step-number">02</span><span className="step-icon"><MessageSquare size={23} /></span><h3>Teklifleri karşılaştır</h3><p>Nakliyecilerden gelen fiyat ve açıklamaları değerlendir. Koşulları doğrudan görüş.</p></div><div className="step-card"><span className="step-number">03</span><span className="step-icon"><CheckCircle2 size={23} /></span><h3>Anlaşmanı netleştir</h3><p>Fiyatı, tarihi ve taşıma şartlarını karşılıklı teyit et. Tarafların sorumluluklarını netleştir.</p></div></div>
-        </section>
-
-        <section className="trust-section" id="trust"><div className="trust-copy"><div className="eyebrow">GÜVEN ÖNCE GELİR</div><h2>Doğrudan bağlantı.<br /><span>Daha şeffaf süreç.</span></h2><p>CargoBridge, yük sahibi ile nakliyeciyi buluşturur. Firma doğrulama durumu, ilan geçmişi ve teklif kayıtları daha bilinçli karar vermene yardımcı olur.</p><div className="trust-points"><span><CheckCircle2 size={18} /> Firma doğrulama durumu</span><span><CheckCircle2 size={18} /> İlan ve teklif kayıtları</span><span><CheckCircle2 size={18} /> Şikâyet bildirimi için temel</span></div></div><div className="trust-card"><div className="trust-card-head"><ShieldCheck size={24} /><div><strong>Şeffaflık ilkesi</strong><small>Taraflar doğrudan görüşür</small></div></div><div className="trust-row"><span>İlan bilgileri</span><strong className="status-good">Kayıt altına alınır</strong></div><div className="trust-row"><span>Fiyat anlaşması</span><strong>Taraflar belirler</strong></div><div className="trust-row"><span>Ödeme ve gümrük</span><strong>Tarafların sorumluluğu</strong></div><p className="trust-disclaimer">Doğrulama rozeti bir garanti veya sigorta değildir. Gerçek sürümde doğrulama ve uyuşmazlık süreçleri ayrıca uygulanmalıdır.</p></div></section>
-      </main>
-
-      <footer className="footer"><a className="brand footer-brand" href="#"><span className="brand-mark"><Truck size={20} /></span><span>Cargo<span>Bridge</span><small>YÜK & NAKLİYE PAZARYERİ</small></span></a><span>Yük ve nakliyeciyi doğrudan buluşturur.</span><div><a href="#how">Nasıl çalışır?</a><a href="#trust">Güvenlik</a><a href="mailto:info@cargobridge.example">İletişim (demo)</a></div><small>© {new Date().getFullYear()} CargoBridge · Demo sürümü</small></footer>
-
-      {modal === 'new-load' && <NewLoadModal onClose={() => setModal(null)} onSubmit={handleCreate} />}
-      {modal === 'offer' && selected && <OfferModal load={selected} onClose={() => setModal(null)} onSubmit={handleOffer} />}
-      {modal === 'details' && selected && <DetailsModal load={loads.find(l => l.id === selected.id) ?? selected} onClose={() => setModal(null)} onOffer={() => setModal('offer')} />}
-      {toast && <div className="toast" role="status"><CheckCircle2 size={18} />{toast}</div>}
-    </div>
-  );
-}
-
-function ModalFrame({ title, subtitle, onClose, children }: { title: string; subtitle: string; onClose: () => void; children: React.ReactNode }) {
-  return <div className="modal-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}><section className="modal" role="dialog" aria-modal="true" aria-label={title}><header className="modal-header"><div><h2>{title}</h2><p>{subtitle}</p></div><button className="icon-button" aria-label="Kapat" onClick={onClose}><X size={20} /></button></header>{children}</section></div>;
-}
-
-function NewLoadModal({ onClose, onSubmit }: { onClose: () => void; onSubmit: (input: NewLoadInput) => void }) {
-  const [routeType, setRouteType] = useState<RouteType>('domestic');
-  const [form, setForm] = useState({ origin: '', destination: '', country: 'Türkiye', cargoType: '', weightTons: '20', vehicleType: 'Tenteli tır', loadingDate: '', price: '', currency: 'TRY' as LoadListing['currency'], notes: '', companyName: '' });
-  const [error, setError] = useState('');
-  const update = (key: keyof typeof form, value: string) => setForm(prev => ({ ...prev, [key]: value }));
-  function submit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!form.origin.trim() || !form.destination.trim() || !form.cargoType.trim() || !form.loadingDate || !form.companyName.trim()) {
-      setError('Lütfen yıldızlı alanları doldur.'); return;
-    }
-    const weight = Number(form.weightTons);
-    const price = form.price.trim() ? Number(form.price) : null;
-    if (!Number.isFinite(weight) || weight <= 0 || (price !== null && (!Number.isFinite(price) || price < 0))) {
-      setError('Ağırlık ve fiyat geçerli bir sayı olmalı.'); return;
-    }
-    onSubmit({ ...form, routeType, weightTons: weight, price, currency: form.currency });
-  }
-  return <ModalFrame title="Yeni yük ilanı" subtitle="Yük bilgilerini gir. İlan bu demo tarayıcıda saklanır." onClose={onClose}><form className="modal-form" onSubmit={submit}>
-    <div className="segmented full"><button type="button" className={routeType === 'domestic' ? 'selected' : ''} onClick={() => { setRouteType('domestic'); update('country', 'Türkiye'); update('currency', 'TRY'); }}>Türkiye içi</button><button type="button" className={routeType === 'international' ? 'selected' : ''} onClick={() => { setRouteType('international'); update('country', 'Rusya'); update('currency', 'EUR'); }}>Türkiye çıkışlı uluslararası</button></div>
-    {routeType === 'international' && <label>Varış ülkesi<select value={form.country} onChange={e => update('country', e.target.value)}>{['Rusya', 'İran', 'Kazakistan'].map(c => <option key={c}>{c}</option>)}</select></label>}
-    <div className="form-grid"><label>Yükleme yeri *<input value={form.origin} onChange={e => update('origin', e.target.value)} placeholder="Örn. İstanbul" /></label><label>Varış yeri *<input value={form.destination} onChange={e => update('destination', e.target.value)} placeholder={form.country === 'Türkiye' ? 'Örn. Ankara' : `Örn. ${form.country}`} /></label></div>
-    <div className="form-grid"><label>Yük türü *<input value={form.cargoType} onChange={e => update('cargoType', e.target.value)} placeholder="Örn. Paletli ürün" /></label><label>Ağırlık (ton) *<input type="number" min="0.1" step="0.1" value={form.weightTons} onChange={e => update('weightTons', e.target.value)} /></label></div>
-    <div className="form-grid"><label>Araç tipi<select value={form.vehicleType} onChange={e => update('vehicleType', e.target.value)}>{vehicles.map(v => <option key={v}>{v}</option>)}</select></label><label>Yükleme tarihi *<input type="date" min={new Date().toISOString().slice(0, 10)} value={form.loadingDate} onChange={e => update('loadingDate', e.target.value)} /></label></div>
-    <div className="form-grid"><label>İstenen fiyat (boş bırakılabilir)<input type="number" min="0" value={form.price} onChange={e => update('price', e.target.value)} placeholder="Tekliflere açık" /></label><label>Para birimi<select value={form.currency} onChange={e => update('currency', e.target.value as LoadListing['currency'])}>{['TRY', 'EUR', 'USD', 'RUB'].map(c => <option key={c}>{c}</option>)}</select></label></div>
-    <label>Firma adı *<input value={form.companyName} onChange={e => update('companyName', e.target.value)} placeholder="Firma veya işletme adı" /></label>
-    <label>Ek açıklama<textarea rows={3} value={form.notes} onChange={e => update('notes', e.target.value)} placeholder="Yükleme koşulları, palet bilgisi vb." /></label>
-    {error && <p className="form-error">{error}</p>}<div className="form-notice"><ShieldCheck size={16} /><span>İlan oluşturmak firma doğrulaması anlamına gelmez. Gerçek sürümde kimlik ve firma kontrolleri ayrıca yapılacaktır.</span></div>
-    <div className="modal-actions"><button type="button" className="button button-secondary" onClick={onClose}>Vazgeç</button><button className="button button-primary" type="submit"><Plus size={17} /> İlanı oluştur</button></div>
-  </form></ModalFrame>;
-}
-
-function OfferModal({ load, onClose, onSubmit }: { load: LoadListing; onClose: () => void; onSubmit: (loadId: string, companyName: string, price: number, currency: LoadListing['currency'], note: string) => void }) {
-  const [companyName, setCompanyName] = useState('');
-  const [price, setPrice] = useState('');
-  const [currency, setCurrency] = useState<LoadListing['currency']>(load.currency);
-  const [note, setNote] = useState('');
-  const [error, setError] = useState('');
-  return <ModalFrame title="Taşıma teklifi ver" subtitle={`${load.origin} → ${load.destination} · ${load.id}`} onClose={onClose}><form className="modal-form" onSubmit={e => { e.preventDefault(); const amount = Number(price); if (!companyName.trim() || !price || !Number.isFinite(amount) || amount <= 0) { setError('Firma adı ve geçerli bir teklif fiyatı gir.'); return; } onSubmit(load.id, companyName.trim(), amount, currency, note.trim()); }}>
-    <label>Firma / nakliyeci adı *<input value={companyName} onChange={e => setCompanyName(e.target.value)} placeholder="Firma adın" /></label><div className="form-grid"><label>Teklif fiyatı *<input type="number" min="1" value={price} onChange={e => setPrice(e.target.value)} placeholder="Tutar" /></label><label>Para birimi<select value={currency} onChange={e => setCurrency(e.target.value as LoadListing['currency'])}>{['TRY', 'EUR', 'USD', 'RUB'].map(c => <option key={c}>{c}</option>)}</select></label></div><label>Mesaj / koşullar<textarea rows={3} value={note} onChange={e => setNote(e.target.value)} placeholder="Araç, müsaitlik veya teklif koşulları" /></label>{error && <p className="form-error">{error}</p>}<div className="form-notice"><CircleHelp size={16} /><span>Bu teklif yalnızca demo verisidir; gerçek kullanıcıya iletilmez.</span></div><div className="modal-actions"><button type="button" className="button button-secondary" onClick={onClose}>Vazgeç</button><button type="submit" className="button button-primary">Teklifi kaydet <ArrowRight size={16} /></button></div>
-  </form></ModalFrame>;
-}
-
-function DetailsModal({ load, onClose, onOffer }: { load: LoadListing; onClose: () => void; onOffer: () => void }) {
-  return <ModalFrame title="İlan detayları" subtitle={`İlan no: ${load.id}`} onClose={onClose}><div className="details-body"><div className="details-route"><div><small>YÜKLEME</small><strong>{load.origin}</strong></div><ArrowRight size={20} /><div><small>TESLİMAT</small><strong>{load.destination}</strong></div></div><div className="details-price"><div><small>TAŞIMA BEDELİ</small><strong>{money(load.price, load.currency)}</strong></div><span className={load.routeType === 'domestic' ? 'tag tag-blue' : 'tag tag-purple'}>{load.routeType === 'domestic' ? 'Yurt içi' : 'Uluslararası'}</span></div><div className="detail-grid"><div><small>Yük türü</small><strong>{load.cargoType}</strong></div><div><small>Ağırlık</small><strong>{load.weightTons} ton</strong></div><div><small>Araç tipi</small><strong>{load.vehicleType}</strong></div><div><small>Yükleme tarihi</small><strong>{dateLabel(load.loadingDate)}</strong></div><div><small>Firma</small><strong>{load.companyName}</strong></div><div><small>Firma durumu</small><strong>{load.verified ? 'Doğrulanmış demo kaydı' : 'Doğrulama yapılmamış'}</strong></div></div>{load.notes && <div className="detail-notes"><strong>Ek açıklama</strong><p>{load.notes}</p></div>}<div className="offer-summary"><strong>Teklifler ({load.offers.length})</strong>{load.offers.length ? load.offers.map(o => <div className="offer-row" key={o.id}><div><strong>{o.companyName}</strong><small>{o.note || 'Ek açıklama yok'}</small></div><strong>{money(o.price, o.currency)}</strong></div>) : <p>Henüz teklif verilmemiş.</p>}</div><div className="form-notice"><ShieldCheck size={16} /><span>İlan detayları bir taşıma sözleşmesi veya ödeme garantisi değildir. Koşullar taraflarca ayrıca teyit edilmelidir.</span></div><div className="modal-actions"><button className="button button-secondary" onClick={onClose}>Kapat</button><button className="button button-primary" onClick={onOffer}>Teklif ver <ArrowRight size={16} /></button></div></div></ModalFrame>;
-}
-
-export default App;
