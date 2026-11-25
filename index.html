@@ -1,17 +1,357 @@
 <!doctype html>
-<html lang="tr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0f766e" />
-    <meta
-      name="description"
-      content="CargoBridge — yük sahipleri ve taşıyıcıları buluşturan yük ve araç platformu."
-    />
-    <title>CargoBridge</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Б/у стеллажи для склада в Москве и по России — паллетные стеллажи, балки, рамы | Склад-Стеллажи</title>
+<meta name="description" content="Купить б/у стеллажи для склада: паллетные стеллажи, балки (траверсы), рамы, оцинкованные и полочные стеллажи, мезонины. Подбор под нагрузку и высоту, расчёт расстановки, доставка по России. Новая складская техника под заказ.">
+<link rel="canonical" href="https://sklad-stellazhi.ru/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#14191f">
+<meta property="og:type" content="website"><meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Б/у стеллажи для склада — Склад-Стеллажи">
+<meta property="og:description" content="Паллетные стеллажи, балки, рамы, мезонины б/у. Москва и регионы. Звоните: +7 925 292-87-61">
+<meta property="og:image" content="https://sklad-stellazhi.ru/og.jpg"><meta property="og:url" content="https://sklad-stellazhi.ru/">
+<meta name="yandex-verification" content="1a7273ef0e194b4d">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#14191f;--steel:#1d242c;--zinc:#d5d9dd;--conc:#f3f4f5;--beam:#f26a1b;--blue:#1e4fd6;--mut:#56606b;--line:#d9dde1;--w:1160px}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font:400 17px/1.6 "Golos Text",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:#fff;padding-bottom:64px;-webkit-font-smoothing:antialiased}
+img,video,svg{max-width:100%;display:block}a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.wrap{max-width:var(--w);margin:0 auto;padding:0 20px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;font-weight:500}
+/* upright strips on wide screens */
+@media(min-width:1320px){body:before,body:after{content:"";position:fixed;top:0;bottom:0;width:18px;z-index:5;background:
+radial-gradient(circle at 50% 50%,#0d1116 0 3px,transparent 3.5px) 0 0/18px 30px,linear-gradient(90deg,#1e4fd6 0 100%)}body:before{left:0}body:after{right:0}}
+/* header */
+header{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:12px;height:58px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:.2px;line-height:1.05}
+.logo svg{width:30px;height:30px;flex:none}
+nav{display:none;gap:24px;font-size:15px;color:#c7ced6}nav a:hover{color:#fff}
+.hphone{font-weight:800;font-size:15px;white-space:nowrap}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 16px/1 "Golos Text",system-ui,sans-serif;padding:15px 22px;border-radius:4px;border:2px solid transparent;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.b-or{background:var(--beam);color:var(--ink)}.b-or:hover{background:#ff7d33}
+.b-ln{border-color:rgba(255,255,255,.55);color:#fff}.b-ln:hover{background:#fff;color:var(--ink)}
+.b-dk{background:var(--ink);color:#fff}.b-dk:hover{background:#000}
+.b-ol{border-color:var(--ink);color:var(--ink)}.b-ol:hover{background:var(--ink);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+/* hero */
+.hero{background:var(--ink);color:#fff;position:relative;overflow:hidden;
+background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:44px 44px}
+.hero .wrap{display:grid;gap:30px;padding-top:40px;padding-bottom:46px}
+h1{font-weight:800;font-size:clamp(32px,7.4vw,58px);line-height:1.06;letter-spacing:-.8px;max-width:15em}
+.lead{color:#c7ced6;font-size:18px;max-width:34em;margin:16px 0 24px}
+.vid{position:relative;background:#000;aspect-ratio:16/9;border:1px solid #3a444f}
+.vid:before{content:"";position:absolute;left:-1px;top:-1px;width:44px;height:6px;background:var(--beam);z-index:2}
+.vid video{width:100%;height:100%;object-fit:cover}
+.snd{position:absolute;left:10px;bottom:10px;background:rgba(20,25,31,.92);color:#fff;border:1px solid #5c6773;border-radius:4px;padding:8px 12px;font:600 13px/1 "Golos Text",sans-serif;cursor:pointer}
+.beam{height:10px;background:var(--beam);position:relative}
+.beam:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 58px,rgba(20,25,31,.28) 58px 62px)}
+.specs{background:var(--conc);border-bottom:1px solid var(--line)}
+.specs ul{list-style:none;display:grid;grid-template-columns:1fr 1fr}
+.specs li{padding:16px 14px 16px 0;font-size:14px;color:var(--mut);line-height:1.35;border-top:1px solid var(--line)}
+.specs li:nth-child(-n+2){border-top:0}
+.specs b{display:block;color:var(--ink);font-size:16px;font-weight:600}
+/* sections */
+section{padding:56px 0}.tint{background:var(--conc)}
+h2{font-weight:800;font-size:clamp(26px,5vw,38px);line-height:1.12;letter-spacing:-.5px;max-width:20em}
+.sub{color:var(--mut);max-width:38em;margin:12px 0 30px}
+/* catalog ledger */
+.ledger{border-top:2px solid var(--ink)}
+.item{display:grid;grid-template-columns:112px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);align-items:center}
+.item img{width:112px;height:112px;object-fit:cover;background:var(--zinc)}
+.item h3{font-size:19px;line-height:1.2;font-weight:600}
+.item p{color:var(--mut);font-size:15px;margin:4px 0 8px}
+.lnk{color:var(--blue);font-weight:600;font-size:15px;border-bottom:1.5px solid currentColor;padding-bottom:1px}
+/* selector */
+.sel{display:grid;gap:26px}
+.ctl{display:grid;gap:16px;align-content:start}
+.ctl label{display:block;font-weight:600;font-size:14px;margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{flex:1 1 auto;min-width:72px;padding:12px 10px;border:1.5px solid var(--ink);background:#fff;font:600 15px/1 "Golos Text",sans-serif;border-radius:4px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.sheet{background:var(--ink);color:#fff;padding:22px 20px;position:relative}
+.sheet:before{content:"";position:absolute;left:0;top:0;width:56px;height:6px;background:var(--beam)}
+.sheet h3{font-size:15px;font-weight:600;color:#aab3bd;margin-bottom:10px}
+.sheet dl{display:grid;gap:0}
+.sheet .r{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-top:1px solid #36404b;align-items:baseline}
+.sheet dt{color:#aab3bd;font-size:15px}.sheet dd{font-size:17px;text-align:right}
+.sheet .nt{font-size:13.5px;color:#aab3bd;margin:14px 0 16px;line-height:1.45}
+details.more{margin-top:26px;border-top:1px solid var(--line)}
+details.more summary{cursor:pointer;padding:16px 0;font-weight:600;list-style:none;display:flex;justify-content:space-between}
+details.more summary:after{content:"+";font-size:22px;line-height:1}details.more[open] summary:after{content:"–"}
+.tw{overflow-x:auto;margin:6px 0 20px}table{border-collapse:collapse;width:100%;min-width:480px;font-size:15px}
+th{background:var(--ink);color:#fff;text-align:left;padding:10px 12px;font-weight:600;font-size:13.5px}td{padding:10px 12px;border-bottom:1px solid var(--line)}
+/* split */
+.split{display:grid;gap:28px;align-items:center}
+.split img{width:100%;height:100%;object-fit:cover;max-height:460px}
+.ticks{list-style:none;margin:16px 0 24px}.ticks li{padding:10px 0 10px 26px;border-top:1px solid var(--line);position:relative}
+.ticks li:before{content:"";position:absolute;left:0;top:19px;width:12px;height:6px;background:var(--beam)}
+.pframe{background:var(--ink);padding:10px}
+/* steps */
+.steps{list-style:none;display:grid;gap:0;border-top:2px solid var(--ink);counter-reset:s}
+.steps li{counter-increment:s;padding:18px 0 18px 56px;border-bottom:1px solid var(--line);position:relative}
+.steps li:before{content:counter(s);position:absolute;left:0;top:16px;width:38px;height:38px;background:var(--beam);color:var(--ink);font:600 18px/38px "IBM Plex Mono",monospace;text-align:center}
+.steps b{display:block;font-weight:600}.steps span{color:var(--mut);font-size:15px}
+/* geo */
+.geo{display:flex;flex-wrap:wrap;gap:8px 18px;list-style:none;margin:6px 0 26px}.geo li{font-size:17px;font-weight:500}.geo li.m{font-weight:800}
+.geo li+li:before{content:"/";color:var(--beam);font-weight:800;margin-right:18px}
+/* gallery */
+.gal{columns:2;column-gap:8px}.gal button{display:block;width:100%;margin:0 0 8px;border:0;padding:0;background:var(--zinc);cursor:zoom-in;break-inside:avoid}
+.gal img{width:100%;height:auto}
+.lb{position:fixed;inset:0;background:rgba(10,13,17,.94);display:none;align-items:center;justify-content:center;z-index:70;padding:14px}.lb.on{display:flex}
+.lb img{max-height:92vh;max-width:96vw}.lb button{position:absolute;top:12px;right:14px;background:#fff;border:0;width:42px;height:42px;font-size:24px;cursor:pointer}
+/* faq */
+details.q{border-top:1px solid var(--line);padding:0}details.q:last-of-type{border-bottom:1px solid var(--line)}
+details.q summary{cursor:pointer;list-style:none;padding:18px 0;font-weight:600;font-size:18px;display:flex;justify-content:space-between;gap:14px}
+details.q summary:after{content:"+";font-size:24px;line-height:1;color:var(--blue)}details.q[open] summary:after{content:"–"}
+details.q p{padding:0 0 18px;color:var(--mut);max-width:42em}
+/* contact */
+.contact{background:var(--ink);color:#fff;padding:0}
+.contact .wrap{display:grid;gap:32px;padding-top:48px;padding-bottom:52px}
+.contact h2{color:#fff}.contact .sub{color:#aab3bd}
+.big{font-weight:800;font-size:clamp(28px,6vw,40px);letter-spacing:-.5px;display:block;margin:6px 0 14px}
+.frm{display:grid;gap:14px}.frm label{font-weight:600;font-size:14px;display:block;margin-bottom:6px;color:#dfe4ea}
+.frm input[type=text],.frm input[type=tel],.frm textarea{width:100%;border:1.5px solid #46515d;background:#0f1419;color:#fff;border-radius:4px;padding:13px;font:inherit}
+.frm textarea{min-height:104px;resize:vertical}
+.frm input::placeholder,.frm textarea::placeholder{color:#7c8794}
+.ck{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:#aab3bd}.ck input{width:18px;height:18px;margin-top:2px;flex:none}.ck a{text-decoration:underline;color:#fff}
+.err{display:none;color:#ffb4a4;font-size:14px}
+.cn{display:grid;gap:6px;font-size:16px;color:#c7ced6}.cn a{color:#fff;font-weight:600}
+footer{background:#0d1116;color:#8d97a3;font-size:13.5px;padding:26px 0}footer b{color:#fff}footer a{color:#c7ced6;text-decoration:underline}
+/* mobile bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:1fr 1fr;background:var(--ink);border-top:3px solid var(--beam)}
+.bar a{padding:15px 10px;text-align:center;font-weight:600;color:#fff;font-size:16px}.bar a+a{background:var(--beam);color:var(--ink)}
+@media(min-width:760px){
+ nav{display:flex}.hero .wrap{grid-template-columns:1.05fr 1fr;align-items:center;padding-top:64px;padding-bottom:70px}
+ .specs ul{grid-template-columns:repeat(4,1fr)}.specs li{border-top:0;padding:20px 18px 20px 0}.specs li+li{padding-left:18px;border-left:1px solid var(--line)}
+ .ledger{display:grid;grid-template-columns:1fr 1fr;column-gap:44px}.item{grid-template-columns:132px 1fr}.item img{width:132px;height:132px}
+ .sel{grid-template-columns:1fr 1fr;gap:40px}.split{grid-template-columns:1fr 1fr;gap:56px}.steps{grid-template-columns:repeat(4,1fr);column-gap:28px;border-top:0}
+ .steps li{border-top:2px solid var(--ink);border-bottom:0;padding:50px 0 0}.steps li:before{top:6px}
+ .gal{columns:4}.contact .wrap{grid-template-columns:1fr 1fr;gap:64px}.bar{display:none}body{padding-bottom:0}section{padding:84px 0}
+}
+@media(prefers-reduced-motion:no-preference){.beam:after{animation:sl 1.6s ease-out .2s both}@keyframes sl{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}.beam{animation:sl 1.4s ease-out .1s both}}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Store","name":"Склад-Стеллажи","description":"Б/у стеллажи для склада: паллетные стеллажи, балки, рамы, мезонины. Новая складская техника под заказ.","telephone":"+7 925 292-87-61","image":"https://sklad-stellazhi.ru/og.jpg","url":"https://sklad-stellazhi.ru/","address":{"@type":"PostalAddress","addressLocality":"Москва","addressCountry":"RU"},"sameAs":["https://t.me/stelaji_teknika"],"areaServed":["Москва","Московская область","Казань","Краснодар","Республика Дагестан","Чеченская Республика","Нижний Новгород","Челябинск","Калуга","Россия"],"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"09:00","closes":"19:00"}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Сколько стоит б/у стеллаж?","acceptedAnswer":{"@type":"Answer","text":"Цена зависит от типа (балки, рамы, полочные), размеров, нагрузки и количества. Пришлите размеры склада или список нужных позиций — рассчитаем и назовём цену."}},
+{"@type":"Question","name":"Какую нагрузку выдерживают паллетные стеллажи?","acceptedAnswer":{"@type":"Answer","text":"Нагрузка на уровень зависит от профиля стойки и балки, длины пролёта и расстояния между уровнями. Подберём комплектацию под ваш вес паллеты (например 500, 1000, 2000 кг на уровень)."}},
+{"@type":"Question","name":"Можно ли рассчитать расстановку стеллажей на моём складе?","acceptedAnswer":{"@type":"Answer","text":"Да. Достаточно размеров склада, типа паллет и техники (погрузчик, штабелёр). Сделаем план расстановки и смету."}},
+{"@type":"Question","name":"Что такое мезонин на стеллажах?","acceptedAnswer":{"@type":"Answer","text":"Это второй уровень склада: на стеллажах первого яруса укладывается настил, по нему устанавливается второй ярус стеллажей и лестница."}},
+{"@type":"Question","name":"Можно ли заказать новую складскую технику?","acceptedAnswer":{"@type":"Answer","text":"Да, подбираем и поставляем новую складскую технику под заказ: штабелёры, тележки и другое оборудование. Напишите задачу, грузоподъёмность и высоту подъёма — пришлём варианты с ценами и сроками."}},
+{"@type":"Question","name":"Вы работаете с регионами?","acceptedAnswer":{"@type":"Answer","text":"Да. Работаем с Москвы и отправляем оборудование в Казань, Краснодар, Нижний Новгород, Челябинск, Калугу, Дагестан, Чечню и другие регионы России. Условия и сроки доставки считаем под ваш заказ."}},
+{"@type":"Question","name":"В какое время можно позвонить?","acceptedAnswer":{"@type":"Answer","text":"С понедельника по субботу с 9:00 до 19:00. Воскресенье — выходной. В мессенджерах (WhatsApp, Telegram, MAX) можно написать в любое время."}}]}
+</script>
+</head>
+<body>
+<header><div class="wrap hd">
+  <a class="logo" href="#top" aria-label="Склад-Стеллажи"><svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="2" width="4" height="28" fill="#1e4fd6"/><rect x="25" y="2" width="4" height="28" fill="#1e4fd6"/><rect x="3" y="8" width="26" height="3.5" fill="#f26a1b"/><rect x="3" y="19" width="26" height="3.5" fill="#f26a1b"/></svg>Склад-Стеллажи</a>
+  <nav><a href="#used">Каталог</a><a href="#tech">Подбор</a><a href="#mezzanine">Мезонины</a><a href="#planner">Расчёт онлайн</a><a href="#geo">Регионы</a><a href="#faq">Вопросы</a></nav>
+  <a class="hphone" href="tel:+79252928761">8 925 292-87-61</a>
+</div></header>
+
+<main id="top">
+<div class="hero"><div class="wrap">
+  <div>
+    <h1>Б/у стеллажи для склада с расчётом и доставкой</h1>
+    <p class="lead">Паллетные стеллажи, балки, рамы и мезонины. Подберём под ваш груз и высоту склада, рассчитаем расстановку и отправим по России.</p>
+    <div class="row"><a class="btn b-or" href="#request">Получить расчёт</a><a class="btn b-ln" href="https://wa.me/79252928761?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D1%8E%D1%82%20%D0%B1/%D1%83%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B8" rel="noopener">Написать в WhatsApp</a></div>
+  </div>
+  <div class="vid"><video id="pv" src="promo.mp4" poster="poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Видео о компании Склад-Стеллажи"></video><button class="snd" id="snd" type="button">Включить звук</button></div>
+</div></div>
+<div class="beam" aria-hidden="true"></div>
+<div class="specs"><div class="wrap"><ul>
+  <li><b>500–3000 кг</b>нагрузка на уровень</li>
+  <li><b>EUR, FIN, GMA</b>и паллеты 1200×1200</li>
+  <li><b>Москва → вся Россия</b>доставка по заказу</li>
+  <li><b>Пн–Сб 9:00–19:00</b>звонки и мессенджеры</li>
+</ul></div></div>
+
+<section id="used"><div class="wrap">
+  <h2>Что у нас есть</h2>
+  <p class="sub">Основное направление — б/у стеллажи. Наличие и цены меняются: напишите, что нужно, и пришлём фото и цену.</p>
+  <div class="ledger">
+    <article class="item"><img src="beams-orange-1.jpg" loading="lazy" alt="Б/у балки (траверсы) паллетных стеллажей оранжевые на поддонах"><div><h3>Балки (траверсы)</h3><p>Оранжевые, красные и синие, разной длины и нагрузки.</p><a class="lnk" href="https://wa.me/79252928761?text=%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D1%8E%D1%82%20%D0%B1%D0%B0%D0%BB%D0%BA%D0%B8%20%D0%B4%D0%BB%D1%8F%20%D0%BF%D0%B0%D0%BB%D0%BB%D0%B5%D1%82%D0%BD%D1%8B%D1%85%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B5%D0%B9" rel="noopener">Узнать цену</a></div></article>
+    <article class="item"><img src="uprights-blue.jpg" loading="lazy" alt="Б/у стойки и рамы стеллажей синие с перфорацией"><div><h3>Стойки и рамы</h3><p>Рамы с раскосами и перфорированные стойки разной высоты.</p><a class="lnk" href="https://wa.me/79252928761?text=%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D1%8E%D1%82%20%D1%80%D0%B0%D0%BC%D1%8B%20%D0%B8%20%D1%81%D1%82%D0%BE%D0%B9%D0%BA%D0%B8%20%D0%B4%D0%BB%D1%8F%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B5%D0%B9" rel="noopener">Узнать цену</a></div></article>
+    <article class="item"><img src="galvanized-beams.jpg" loading="lazy" alt="Оцинкованные рамы и балки для складских стеллажей"><div><h3>Оцинкованные рамы и балки</h3><p>Для влажных и холодных помещений, где важен аккуратный вид.</p><a class="lnk" href="https://wa.me/79252928761?text=%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D1%8E%D1%82%20%D0%BE%D1%86%D0%B8%D0%BD%D0%BA%D0%BE%D0%B2%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B8" rel="noopener">Узнать цену</a></div></article>
+    <article class="item"><img src="racks-red-hall.jpg" loading="lazy" alt="Смонтированные паллетные стеллажи с красными балками на складе"><div><h3>Паллетные стеллажи в сборе</h3><p>От нескольких секций до целого склада, с расчётом и сметой.</p><a class="lnk" href="https://wa.me/79252928761?text=%D0%9D%D1%83%D0%B6%D0%B5%D0%BD%20%D1%80%D0%B0%D1%81%D1%87%D1%91%D1%82%20%D0%BF%D0%B0%D0%BB%D0%BB%D0%B5%D1%82%D0%BD%D1%8B%D1%85%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B5%D0%B9%20%D0%BD%D0%B0%20%D1%81%D0%BA%D0%BB%D0%B0%D0%B4" rel="noopener">Запросить расчёт</a></div></article>
+    <article class="item"><img src="mezzanine-shelving.jpg" loading="lazy" alt="Полочные стеллажи с решётчатым настилом"><div><h3>Полочные стеллажи</h3><p>Для коробок и комплектующих, с настилом и ограждением.</p><a class="lnk" href="https://wa.me/79252928761?text=%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D1%8E%D1%82%20%D0%BF%D0%BE%D0%BB%D0%BE%D1%87%D0%BD%D1%8B%D0%B5%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B8" rel="noopener">Узнать цену</a></div></article>
+    <article class="item"><img src="beams-yard.jpg" loading="lazy" alt="Б/у стеллажное оборудование и комплектующие на площадке"><div><h3>Комплектующие</h3><p>Нужна одна позиция? Подберём недостающие балки, рамы и элементы.</p><a class="lnk" href="https://t.me/+79252928761" rel="noopener">Написать в Telegram</a></div></article>
+  </div>
+</div></section>
+
+<section id="tech" class="tint"><div class="wrap">
+  <h2>Подберите профиль стеллажа</h2>
+  <p class="sub">Выберите нагрузку на уровень, число паллет и тип паллета. Покажем типовые профили и длину балки.</p>
+  <div class="sel">
+    <div class="ctl">
+      <div><label>Нагрузка на уровень секции</label><div class="seg" data-k="ton"><button type="button" data-v="500">500 кг</button><button type="button" data-v="1000" aria-pressed="true">1000 кг</button><button type="button" data-v="2000">2000 кг</button><button type="button" data-v="3000">3000 кг</button></div></div>
+      <div><label>Паллет на одном уровне секции</label><div class="seg" data-k="n"><button type="button" data-v="1">1</button><button type="button" data-v="2" aria-pressed="true">2</button><button type="button" data-v="3">3</button></div></div>
+      <div><label>Тип паллета</label><div class="seg" data-k="pal"><button type="button" data-v="EUR" aria-pressed="true">EUR 800×1200</button><button type="button" data-v="FIN">FIN 1000×1200</button><button type="button" data-v="GMA">GMA 1016×1219</button><button type="button" data-v="SQ">1200×1200</button></div></div>
+    </div>
+    <div class="sheet" aria-live="polite">
+      <h3>Типовая комплектация</h3>
+      <dl>
+        <div class="r"><dt>Стойка (рама)</dt><dd class="mono" id="o-up"></dd></div>
+        <div class="r"><dt>Балка (траверса)</dt><dd class="mono" id="o-bm"></dd></div>
+        <div class="r"><dt>Длина балки</dt><dd class="mono" id="o-len"></dd></div>
+        <div class="r"><dt>Глубина рамы</dt><dd class="mono" id="o-dep"></dd></div>
+        <div class="r"><dt>Вес одного паллета</dt><dd class="mono" id="o-w"></dd></div>
+      </dl>
+      <p class="nt" id="o-nt"></p>
+      <a class="btn b-or" id="o-cta" href="#" rel="noopener">Уточнить подбор</a>
+    </div>
+  </div>
+  <details class="more"><summary>Все значения таблицами</summary>
+    <div class="tw"><table><tr><th>Нагрузка на уровень</th><th>Стойка, мм</th><th>Балка, мм</th></tr>
+    <tr><td>500 кг</td><td class="mono">80 × 60 × 1,5</td><td class="mono">80 × 45 × 1,2</td></tr>
+    <tr><td>1000 кг</td><td class="mono">90 × 70 × 1,8</td><td class="mono">100 × 45 × 1,5</td></tr>
+    <tr><td>2000 кг</td><td class="mono">100 × 70 × 2,0</td><td class="mono">120 × 45 × 1,5</td></tr>
+    <tr><td>3000 кг</td><td class="mono">120 × 95 × 2,5</td><td class="mono">140 × 45 × 1,8</td></tr></table></div>
+    <p class="sub" style="margin:0 0 12px">Размеры: сечение стойки (поперёк × вдоль) × толщина; балка: высота × полка × толщина.</p>
+    <div class="tw"><table><tr><th>Паллет</th><th>Размер, мм</th><th>Глубина рамы, мм</th></tr>
+    <tr><td>EUR / EPAL</td><td class="mono">800 × 1200</td><td class="mono">800</td></tr>
+    <tr><td>FIN</td><td class="mono">1000 × 1200</td><td class="mono">900</td></tr>
+    <tr><td>GMA / ISO</td><td class="mono">1016 × 1219</td><td class="mono">920</td></tr>
+    <tr><td>Квадратный</td><td class="mono">1200 × 1200</td><td class="mono">1100</td></tr></table></div>
+    <p class="sub" style="margin:0 0 6px">Расстояние между уровнями = высота паллета с грузом + 150–200 мм на подъём вилами. Ширина прохода зависит от погрузчика или штабелёра: пришлите марку техники.</p>
+  </details>
+</div></section>
+
+<section id="mezzanine"><div class="wrap split">
+  <div>
+    <h2>Мезонин: второй уровень склада на стеллажах</h2>
+    <p class="sub" style="margin-bottom:0">Удвоит полезную площадь без расширения здания: стеллажи первого уровня, настил, лестница, ограждение и второй ярус.</p>
+    <ul class="ticks"><li>Настил: ДСП/фанера, просечно-вытяжной лист или решётка</li><li>Лестница и ограждение по периметру</li><li>Расчёт нагрузки на настил: 350, 500 или 600 кг/м²</li><li>План расстановки и смета по вашим размерам</li></ul>
+    <a class="btn b-dk" href="https://wa.me/79252928761?text=%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D0%B5%D1%82%20%D0%BC%D0%B5%D0%B7%D0%BE%D0%BD%D0%B8%D0%BD%20%D0%BD%D0%B0%20%D1%81%D0%BA%D0%BB%D0%B0%D0%B4%D0%B5" rel="noopener">Рассчитать мезонин</a>
+  </div>
+  <img src="mezzanine-mesh-aisle.jpg" loading="lazy" alt="Склад с решётчатым настилом на уровне мезонина и полочными стеллажами">
+</div></section>
+
+<section id="planner" class="tint"><div class="wrap split">
+  <div class="pframe"><img src="planner.svg" loading="lazy" alt="Планировщик склада: план расстановки, вид стеллажей, 3D-модель"></div>
+  <div>
+    <h2>Планировщик склада онлайн</h2>
+    <p class="sub" style="margin-bottom:0">Введите размеры склада, тип паллета, нагрузку и тип расстановки. Программа построит план, вид стеллажей, 3D-модель и ведомость материалов со стоимостью. Есть режим мезонина.</p>
+    <ul class="ticks"><li>План расстановки и вид стеллажей, лист A3</li><li>3D-модель и видео-обзор склада</li><li>Количество стоек, балок и связей, смета</li><li>Пробный доступ бесплатно: 1–2 расчёта</li></ul>
+    <div class="row"><a class="btn b-or" href="https://wa.me/79252928761?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%A5%D0%BE%D1%87%D1%83%20%D0%BF%D0%BE%D0%BF%D1%80%D0%BE%D0%B1%D0%BE%D0%B2%D0%B0%D1%82%D1%8C%20%D0%BE%D0%BD%D0%BB%D0%B0%D0%B9%D0%BD-%D0%BF%D0%BB%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D1%89%D0%B8%D0%BA%20%D1%81%D0%BA%D0%BB%D0%B0%D0%B4%D0%B0" rel="noopener">Получить пробный доступ</a><a class="btn b-ol" href="https://app.sklad-stellazhi.ru/" rel="noopener">Открыть планировщик</a></div>
+  </div>
+</div></section>
+
+<section id="new"><div class="wrap">
+  <h2>Новая складская техника под заказ</h2>
+  <p class="sub">Штабелёры (ручные, электрические, самоходные), гидравлические и платформенные тележки и другое оборудование. Назовите задачу, грузоподъёмность и высоту подъёма — пришлём варианты с ценами и сроками.</p>
+  <a class="btn b-dk" href="https://wa.me/79252928761?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9D%D1%83%D0%B6%D0%B5%D0%BD%20%D0%BF%D0%BE%D0%B4%D0%B1%D0%BE%D1%80%20%D1%81%D0%BA%D0%BB%D0%B0%D0%B4%D1%81%D0%BA%D0%BE%D0%B9%20%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D0%BA%D0%B8" rel="noopener">Запросить подбор техники</a>
+</div></section>
+
+<section class="tint"><div class="wrap">
+  <h2>От заявки до доставки</h2><p class="sub"></p>
+  <ol class="steps">
+    <li><b>Заявка</b><span>Звонок или сообщение: что нужно и для какого склада.</span></li>
+    <li><b>Подбор и расчёт</b><span>Комплектация, расстановка, смета.</span></li>
+    <li><b>Фото и цена</b><span>Фото позиций, цена и сроки.</span></li>
+    <li><b>Доставка</b><span>Отправка и консультация по монтажу.</span></li>
+  </ol>
+</div></section>
+
+<section id="geo"><div class="wrap">
+  <h2>Работаем с Москвы, отправляем по России</h2>
+  <p class="sub">Условия и сроки доставки считаем под ваш заказ.</p>
+  <ul class="geo"><li class="m">Москва</li><li class="m">Московская область</li><li>Казань</li><li>Краснодар</li><li>Нижний Новгород</li><li>Челябинск</li><li>Калуга</li><li>Махачкала и Дагестан</li><li>Грозный и Чечня</li><li>Подольск</li><li>Химки</li><li>Домодедово</li><li>Балашиха</li><li>Тула</li><li>Владимир</li><li>Рязань</li><li>Тверь</li><li>Ярославль</li></ul>
+  <a class="btn b-ol" href="https://wa.me/79252928761?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%9D%D1%83%D0%B6%D0%BD%D0%B0%20%D0%B4%D0%BE%D1%81%D1%82%D0%B0%D0%B2%D0%BA%D0%B0%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B5%D0%B9%20%D0%B2%20%D0%BC%D0%BE%D0%B9%20%D0%B3%D0%BE%D1%80%D0%BE%D0%B4" rel="noopener">Узнать доставку в мой город</a>
+</div></section>
+
+<section id="photo" class="tint"><div class="wrap">
+  <h2>Наше оборудование</h2><p class="sub">Фотографии оборудования. Нажмите, чтобы увеличить.</p>
+  <div class="gal" id="gal">
+    <button type="button"><img loading="lazy" src="gal/g01.jpg" width="675" height="1200" alt="Высокие паллетные стеллажи с оранжевыми балками и синими стойками"></button>
+    <button type="button"><img loading="lazy" src="gal/g02.jpg" width="960" height="1280" alt="Проход между высокими стеллажами с красными балками"></button>
+    <button type="button"><img loading="lazy" src="gal/g03.jpg" width="1170" height="998" alt="Синие стойки стеллажей в кузове фуры"></button>
+    <button type="button"><img loading="lazy" src="gal/g04.jpg" width="1170" height="1206" alt="Оранжевые стойки стеллажей, вид на сечение профиля"></button>
+    <button type="button"><img loading="lazy" src="gal/g05.jpg" width="1170" height="855" alt="Оранжевые балки на поддонах, упакованные в плёнку"></button>
+    <button type="button"><img loading="lazy" src="gal/g06.jpg" width="1170" height="1126" alt="Синие профили стеллажей в кузове фуры"></button>
+    <button type="button"><img loading="lazy" src="gal/g07.jpg" width="1170" height="872" alt="Упакованные балки стеллажей на поддонах"></button>
+    <button type="button"><img loading="lazy" src="gal/g08.jpg" width="787" height="1400" alt="Оранжевые балки и оцинкованные рамы в кузове"></button>
+    <button type="button"><img loading="lazy" src="gal/g09.jpg" width="1170" height="1106" alt="Выгрузка синих стоек вилочным погрузчиком"></button>
+    <button type="button"><img loading="lazy" src="gal/g10.jpg" width="1170" height="952" alt="Синие рамы стеллажей на поддонах во дворе склада"></button>
+    <button type="button"><img loading="lazy" src="gal/g11.jpg" width="1157" height="1400" alt="Жёлтые балки паллетных стеллажей на складе"></button>
+    <button type="button"><img loading="lazy" src="gal/g12.jpg" width="1134" height="1400" alt="Синие стойки стеллажей, штабель"></button>
+    <button type="button"><img loading="lazy" src="gal/g13.jpg" width="1170" height="978" alt="Жёлтые балки паллетных стеллажей, штабель"></button>
+    <button type="button"><img loading="lazy" src="gal/g14.jpg" width="1170" height="808" alt="Оранжевые балки и синие стойки на складе"></button>
+    <button type="button"><img loading="lazy" src="gal/g15.jpg" width="1170" height="969" alt="Проход между штабелями балок на складе"></button>
+    <button type="button"><img loading="lazy" src="gal/g16.jpg" width="1170" height="946" alt="Синие рамы с диагональными раскосами и балки"></button>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap">
+  <h2>Частые вопросы</h2><p class="sub"></p>
+  <details class="q"><summary>Сколько стоит б/у стеллаж?</summary><p>Цена зависит от типа (балки, рамы, полочные), размеров, нагрузки и количества. Пришлите размеры склада или список позиций — рассчитаем и назовём цену.</p></details>
+  <details class="q"><summary>Какую нагрузку выдерживают паллетные стеллажи?</summary><p>Нагрузка на уровень зависит от профиля стойки и балки, длины пролёта и расстояния между уровнями. Подберём комплектацию под ваш вес паллета: 500, 1000 или 2000 кг на уровень.</p></details>
+  <details class="q"><summary>Можно ли рассчитать расстановку на моём складе?</summary><p>Да. Достаточно размеров склада, типа паллет и техники (погрузчик, штабелёр). Сделаем план расстановки и смету.</p></details>
+  <details class="q"><summary>Что такое мезонин на стеллажах?</summary><p>Это второй уровень склада: на стеллажах первого яруса укладывается настил, по нему устанавливается второй ярус стеллажей и лестница.</p></details>
+  <details class="q"><summary>Можно ли заказать новую складскую технику?</summary><p>Да, подбираем и поставляем новую технику под заказ: штабелёры, тележки и другое оборудование. Напишите задачу, грузоподъёмность и высоту подъёма.</p></details>
+  <details class="q"><summary>Вы работаете с регионами?</summary><p>Да. Работаем с Москвы и отправляем оборудование в Казань, Краснодар, Нижний Новгород, Челябинск, Калугу, Дагестан, Чечню и другие регионы. Условия и сроки доставки считаем под ваш заказ.</p></details>
+  <details class="q"><summary>В какое время можно позвонить?</summary><p>С понедельника по субботу с 9:00 до 19:00. Воскресенье — выходной. В WhatsApp, Telegram и MAX можно написать в любое время.</p></details>
+</div></section>
+
+<section id="request" class="contact"><div class="wrap">
+  <div>
+    <h2>Получите расчёт и цену</h2>
+    <p class="sub">Опишите задачу: размеры склада, тип паллет, нагрузку, нужные позиции. Заявка откроется в WhatsApp, фото и чертежи приложите там же.</p>
+    <a class="big" href="tel:+79252928761">+7 925 292-87-61</a>
+    <div class="cn"><a href="https://t.me/+79252928761" rel="noopener">Telegram</a><a href="https://t.me/stelaji_teknika" rel="noopener">Telegram-канал</a><span>MAX: +7 925 292-87-61</span><span>Москва · пн–сб 9:00–19:00</span></div>
+  </div>
+  <form class="frm" id="rf" novalidate>
+    <div><label for="fn">Имя</label><input type="text" id="fn" autocomplete="name" placeholder="Как к вам обращаться"></div>
+    <div><label for="fp">Телефон</label><input type="tel" id="fp" autocomplete="tel" placeholder="+7 ___ ___-__-__"></div>
+    <div><label for="ft">Задача</label><textarea id="ft" placeholder="Например: склад 20×30 м, паллеты 800×1200, 200 паллетомест, 1000 кг на уровень"></textarea></div>
+    <label class="ck"><input type="checkbox" id="fc"><span>Согласен на обработку персональных данных по <a href="privacy.html">политике обработки персональных данных</a>.</span></label>
+    <div class="err" id="fe" role="alert"></div>
+    <button class="btn b-or" type="submit">Отправить в WhatsApp</button>
+  </form>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <b>Склад-Стеллажи</b> — б/у стеллажи и складское оборудование. Москва.<br>
+  ИП Орюндю Мурат · ИНН 772828783735 · ОГРНИП 324508100201851 · <a href="privacy.html">Политика конфиденциальности</a><br>
+  Информация на сайте носит справочный характер и не является публичной офертой. Наличие, цены и сроки уточняйте. © <span id="y">2026</span>
+</div></footer>
+
+<div class="bar"><a href="tel:+79252928761">Позвонить</a><a href="https://wa.me/79252928761?text=%D0%97%D0%B4%D1%80%D0%B0%D0%B2%D1%81%D1%82%D0%B2%D1%83%D0%B9%D1%82%D0%B5%21%20%D0%98%D0%BD%D1%82%D0%B5%D1%80%D0%B5%D1%81%D1%83%D1%8E%D1%82%20%D0%B1/%D1%83%20%D1%81%D1%82%D0%B5%D0%BB%D0%BB%D0%B0%D0%B6%D0%B8" rel="noopener">WhatsApp</a></div>
+<div class="lb" id="lb"><button aria-label="Закрыть">×</button><img alt=""></div>
+<script>
+(function(){var v=document.getElementById('pv'),b=document.getElementById('snd');if(v&&b){var pl=v.play&&v.play();if(pl&&pl.catch)pl.catch(function(){});
+b.addEventListener('click',function(){if(v.muted){v.muted=false;v.currentTime=0;v.play();b.textContent='Выключить звук'}else{v.muted=true;b.textContent='Включить звук'}})}})();
+(function(){
+var UP={500:'80×60×1,5',1000:'90×70×1,8',2000:'100×70×2,0',3000:'120×95×2,5'},BM={500:'80×45×1,2',1000:'100×45×1,5',2000:'120×45×1,5',3000:'140×45×1,8'};
+var PAL={EUR:{n:'EUR 800×1200',d:800,a:1.2},FIN:{n:'FIN 1000×1200',d:900,a:1.2},GMA:{n:'GMA 1016×1219',d:920,a:1.219},SQ:{n:'1200×1200',d:1100,a:1.2}};
+var TONS=[500,1000,2000,3000],st={ton:1000,n:2,pal:'EUR'};
+function gap(n){return n>=3?0.075:0.1}
+function el(i){return document.getElementById(i)}
+function draw(){var p=PAL[st.pal],len=Math.round((st.n*p.a+(st.n+1)*gap(st.n))*100)/100,i=TONS.indexOf(st.ton),step=len>2.75&&i<3,bt=step?TONS[i+1]:st.ton;
+el('o-up').textContent=UP[st.ton];el('o-bm').textContent=BM[bt];el('o-len').textContent=Math.round(len*1000)+' мм';el('o-dep').textContent=p.d+' мм';el('o-w').textContent='до '+Math.round(st.ton/st.n)+' кг';
+el('o-nt').textContent=(step?'Длинная балка: профиль взят на ступень мощнее. ':'')+'Типовые значения. У б/у оборудования профили зависят от производителя, поэтому сверяем маркировку и паспорт.';
+var t='Здравствуйте! Подбор стеллажа: '+st.ton+' кг на уровень, '+st.n+' паллет ('+p.n+'). Типовая комплектация: стойка '+UP[st.ton]+', балка '+BM[bt]+', длина '+Math.round(len*1000)+' мм. Нужен расчёт.';
+el('o-cta').href='https://wa.me/79252928761?text='+encodeURIComponent(t)}
+document.querySelectorAll('.seg').forEach(function(g){g.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;g.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed','false')});b.setAttribute('aria-pressed','true');var k=g.dataset.k,v=b.dataset.v;st[k]=(k==='pal')?v:+v;draw()})});draw()})();
+(function(){var f=document.getElementById('rf');f.addEventListener('submit',function(e){e.preventDefault();var n=document.getElementById('fn').value.trim(),p=document.getElementById('fp').value.trim(),t=document.getElementById('ft').value.trim(),c=document.getElementById('fc').checked,er=document.getElementById('fe');
+if(!n||p.replace(/\D/g,'').length<10||!t){er.textContent='Заполните имя, телефон и задачу.';er.style.display='block';return}
+if(!c){er.textContent='Нужно согласие на обработку персональных данных.';er.style.display='block';return}er.style.display='none';
+window.open('https://wa.me/79252928761?text='+encodeURIComponent('Здравствуйте! Заявка с сайта.\nИмя: '+n+'\nТелефон: '+p+'\nЗадача: '+t),'_blank')})})();
+(function(){var lb=document.getElementById('lb'),im=lb.querySelector('img');
+document.getElementById('gal').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var s=b.querySelector('img');im.src=s.src;im.alt=s.alt;lb.classList.add('on')});
+lb.addEventListener('click',function(){lb.classList.remove('on')});document.addEventListener('keydown',function(e){if(e.key==='Escape')lb.classList.remove('on')});
+document.getElementById('y').textContent=new Date().getFullYear()})();
+</script>
+<!-- Яндекс.Метрика: после регистрации счётчика вставьте код здесь -->
+</body>
 </html>
